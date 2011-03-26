@@ -1,4 +1,5 @@
 LOCAL_PATH := $(call my-dir)
+MY_JNI_DIR := $(LOCAL_PATH)
 
 include $(CLEAR_VARS)
 
@@ -9,9 +10,9 @@ LOCAL_CFLAGS := -fvisibility=hidden -fvisibility-inlines-hidden -Wall -O3
 LOCAL_LDLIBS := -llog
 # LOCAL_LDLIBS += -Wl,-Map,linker.map
 LOCAL_ARM_MODE := arm
+PERL ?= perl
 
-SUFFIXES += .dat
-.dat.h:
-	$(PERL) samp2src.pl $* $< $@
+%.h: %.dat
+	$(PERL) $(MY_JNI_DIR)/resid-nofp/samp2src.pl $* $< $@
 
 include $(BUILD_SHARED_LIBRARY)
