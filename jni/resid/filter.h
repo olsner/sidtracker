@@ -22,7 +22,7 @@
 
 #include <math.h>
 
-#include "residfp-config.h"
+#include "siddefs-fp.h"
 
 // ----------------------------------------------------------------------------
 // The SID filter is modeled with a two-integrator-loop biquadratic filter,

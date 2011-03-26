@@ -20,7 +20,7 @@
 #ifndef VICE__WAVE_H__
 #define VICE__WAVE_H__
 
-#include "residfp-config.h"
+#include "siddefs-fp.h"
 
 extern float dac[12];
 extern float wftable[11][4096];
