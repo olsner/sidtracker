@@ -27,9 +27,20 @@
 							</builder>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1701916058" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="com.android.tool.compiler.g++.97051234" name="Android G++" superClass="com.android.tool.compiler.g++">
+								<option id="gnu.cpp.compiler.option.include.paths.784346320" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/platforms/android-8/arch-arm/usr/include"/>
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/arm-linux-androideabi/include"/>
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include"/>
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed"/>
+								</option>
 								<inputType id="com.android.tool.compiler.g++.input.1506717246" superClass="com.android.tool.compiler.g++.input"/>
 							</tool>
 							<tool id="com.android.tool.compiler.c.1851302552" name="Android GCC" superClass="com.android.tool.compiler.c">
+								<option id="gnu.c.compiler.option.include.paths.1433368519" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/arm-linux-androideabi/include"/>
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include"/>
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed"/>
+								</option>
 								<inputType id="com.android.tool.compiler.c.input.1737470738" superClass="com.android.tool.compiler.c.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.2026318412" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
@@ -40,6 +51,11 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1388178668" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+								<option id="gnu.both.asm.option.include.paths.1227589270" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/arm-linux-androideabi/include"/>
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include"/>
+									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.424908611" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
@@ -299,6 +315,8 @@
 					</profile>
 				</scannerConfigBuildInfo>
 			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
