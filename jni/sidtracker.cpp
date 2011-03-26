@@ -41,6 +41,91 @@ void Java_se_olsner_sidtracker_NativeTest_testFunc_ii(JNIEnv* env, jclass apidem
 REG_JNI_(se_olsner_sidtracker_NativeTest, testFunc, testFunc_ii, "(II)V");
 REG_CLASS("se/olsner/sidtracker/NativeTest", se_olsner_sidtracker_NativeTest);
 
+template<typename T>
+static T primArrayGet(JNIEnv* env, jarray array, jint index)
+{
+	T* ptr = (T*)env->GetPrimitiveArrayCritical(array, NULL);
+	T ret = ptr[index];
+	env->ReleasePrimitiveArrayCritical(array, ptr, 0);
+	return ret;
+}
+template<typename T>
+static void primArrayPut(JNIEnv* env, jarray array, jint index, T val)
+{
+	T* ptr = (T*)env->GetPrimitiveArrayCritical(array, NULL);
+	ptr[index] = val;
+	env->ReleasePrimitiveArrayCritical(array, ptr, 0);
+}
+
+#define SIDCLASSNAME "se/olsner/sidtracker/SID"
+static SIDFP& getNativeSIDData(JNIEnv* env, jobject sid)
+{
+	static bool inited = false;
+	static jfieldID fid;
+	if (!inited)
+	{
+		jclass klass = env->GetObjectClass(sid);
+		fid = env->GetFieldID(klass, "nativeData", "J");
+		inited = true;
+	}
+	return *(SIDFP*)env->GetLongField(sid, fid);
+}
+#define GET_SID() SIDFP& sidfp = getNativeSIDData(env, sid)
+void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
+{
+	SIDFP& sidfp = *new SIDFP();
+	sidfp.set_chip_model(MOS6581FP);
+	sidfp.set_voice_nonlinearity(0.96f);
+	sidfp.enable_filter(true);
+	sidfp.set_sampling_parameters(985248, SAMPLE_RESAMPLE_INTERPOLATE, 44100);
+
+	LOGV("Created a SID: %p", &sidfp);
+
+	jclass klass = env->GetObjectClass(sid);
+	jfieldID fid = env->GetFieldID(klass, "nativeData", "J");
+	env->SetLongField(sid, fid, (jlong)&sidfp);
+}
+REG_JNI(se_olsner_sidtracker_SID, nativeInit, "()V");
+void Java_se_olsner_sidtracker_SID_write(JNIEnv* env, jobject sid,
+		jint reg, jint value)
+{
+	LOGV("Setting SID register %#x to %#x", reg, value);
+	GET_SID();
+	sidfp.write(reg, value);
+}
+REG_JNI(se_olsner_sidtracker_SID, write, "(II)V");
+jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
+		jintArray cycles, jshortArray output, jint offset, jint length)
+{
+	GET_SID();
+	cycle_count dt = primArrayGet<jint>(env, cycles, 0);
+	const cycle_count orig_dt = dt;
+	jshort* buffer = new jshort[length];
+	if (!buffer)
+		return 0;
+
+	//LOGV("Now clocking %d samples (%d cycles)", length, dt);
+	jint written = 0;
+	while (length > written && dt)
+	{
+		cycle_count prev_dt = dt;
+		int written0 = sidfp.clock(dt, buffer + written, length - written);
+		//LOGV("Clocked %d and got %d samples", prev_dt - dt, written0);
+		written += written0;
+	}
+
+	//LOGV("%d samples %d cycles later", written, orig_dt - dt);
+	jshort* temp = (jshort*)env->GetPrimitiveArrayCritical(output, NULL);
+	memcpy(temp + offset, buffer, written);
+	env->ReleasePrimitiveArrayCritical(output, buffer, 0);
+
+	primArrayPut(env, cycles, 0, (jint)dt);
+	delete[] buffer;
+	return written;
+}
+REG_JNI(se_olsner_sidtracker_SID, clock, "([I[SII)I");
+REG_CLASS("se/olsner/sidtracker/SID", se_olsner_sidtracker_SID);
+
 int jniRegisterNativeMethods(JNIEnv* env, const char* className,
 		const JNINativeMethod* gMethods, int numMethods)
 {
