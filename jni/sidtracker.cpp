@@ -8,10 +8,24 @@
 #define LOGE(fmt, ...) LOG_(ERROR, fmt, ## __VA_ARGS__)
 #define LOGI(fmt, ...) LOG_(INFO, fmt, ## __VA_ARGS__)
 
+struct JNINativeClass
+{
+	const char* className; // In JNI format (foo/bar/Bar)
+	JNINativeMethod* start;
+	JNINativeMethod* stop;
+};
+
 #define SECTION(s) __attribute__((section(s)))
 #define REG_JNI_(klass, jname, cname, sig) \
-	JNINativeMethod jnireg__##klass##__##cname SECTION("JNI_" #klass) = { #jname, sig, (void*)Java_##klass##_##cname};
+	JNINativeMethod jnireg__##klass##__##cname SECTION("JNI_" #klass) = { #jname, sig, (void*)Java_##klass##_##cname}
 #define REG_JNI(klass, name, sig) REG_JNI_(klass, name, name, sig)
+#define REG_CLASS(name, klass) \
+	extern JNINativeMethod __start_JNI_##klass[1]; \
+	extern JNINativeMethod __stop_JNI_##klass[1]; \
+	JNINativeClass jnireg_class__##klass SECTION("JNI_classes") = { name, __start_JNI_##klass, __stop_JNI_##klass }
+
+extern JNINativeClass __start_JNI_classes[1];
+extern JNINativeClass __stop_JNI_classes[1];
 
 void Java_se_olsner_sidtracker_NativeTest_testFunc(JNIEnv* env, jclass apidemos, jint i, jboolean z)
 {
@@ -23,15 +37,7 @@ void Java_se_olsner_sidtracker_NativeTest_testFunc_ii(JNIEnv* env, jclass apidem
 	LOGI("testFunc(int,int) called! %d %d", i, j);
 }
 REG_JNI_(se_olsner_sidtracker_NativeTest, testFunc, testFunc_ii, "(II)V");
-
-#define USE_CLASS(klass) \
-	extern JNINativeMethod __start_JNI_##klass[1]; \
-	extern JNINativeMethod __stop_JNI_##klass[1];
-#define REGISTER_CLASS(env, jname, cname) \
-	({ \
-		USE_CLASS(cname); \
-		jniRegisterNativeMethods(env, jname, __start_JNI_##cname, __stop_JNI_##cname - __start_JNI_##cname); \
-	 })
+REG_CLASS("se/olsner/sidtracker/NativeTest", se_olsner_sidtracker_NativeTest);
 
 int jniRegisterNativeMethods(JNIEnv* env, const char* className,
 		const JNINativeMethod* gMethods, int numMethods)
@@ -66,8 +72,11 @@ EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
 	}
 	LOGI("Env: %p", env);
 
-	if (REGISTER_CLASS(env, "se/olsner/sidtracker/NativeTest", se_olsner_sidtracker_NativeTest))
-		return -1;
+	for (JNINativeClass* p = __start_JNI_classes; p < __stop_JNI_classes; p++)
+	{
+		if (jniRegisterNativeMethods(env, p->className, p->start, p->stop - p->start))
+			return -1;
+	}
 
 	return JNI_VERSION_1_6;
 }
