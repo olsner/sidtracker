@@ -17,11 +17,11 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  ---------------------------------------------------------------------------
 
-float convolve(const float *a, const float *b, int n)
+float convolve(const float *__restrict a, const float *__restrict b, size_t n)
 {
     float out = 0.f;
-    while (n --)
-        out += (*(a ++)) * (*(b ++));
+    for (size_t i = 0; i < n; i++)
+        out += a[i] * b[i];
     return out;
 }
 

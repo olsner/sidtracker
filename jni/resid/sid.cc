@@ -20,8 +20,9 @@
 #include "sid.h"
 
 #include <math.h>
+#include <stddef.h>
 
-extern float convolve(const float *a, const float *b, int n);
+extern float convolve(const float *a, const float *b, size_t n);
 extern float convolve_sse(const float *a, const float *b, int n);
 
 enum host_cpu_feature {
