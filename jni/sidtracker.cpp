@@ -77,7 +77,7 @@ void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
 	sidfp.set_chip_model(MOS6581FP);
 	sidfp.set_voice_nonlinearity(0.96f);
 	sidfp.enable_filter(true);
-	sidfp.set_sampling_parameters(985248, SAMPLE_RESAMPLE_INTERPOLATE, 44100);
+	sidfp.set_sampling_parameters(985248, SAMPLE_INTERPOLATE, 44100);
 
 	LOGV("Created a SID: %p", &sidfp);
 
