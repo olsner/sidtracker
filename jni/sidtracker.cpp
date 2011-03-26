@@ -9,14 +9,20 @@
 #define LOGI(fmt, ...) LOG_(INFO, fmt, ## __VA_ARGS__)
 
 #define SECTION(s) __attribute__((section(s)))
-#define REG_JNI(klass, name, sig) \
-	JNINativeMethod jnireg__##klass##__##name SECTION("JNI_" #klass) = { #name, sig, (void*)Java_##klass##_##name}
+#define REG_JNI_(klass, jname, cname, sig) \
+	JNINativeMethod jnireg__##klass##__##cname SECTION("JNI_" #klass) = { #jname, sig, (void*)Java_##klass##_##cname};
+#define REG_JNI(klass, name, sig) REG_JNI_(klass, name, name, sig)
 
 void Java_se_olsner_sidtracker_NativeTest_testFunc(JNIEnv* env, jclass apidemos, jint i, jboolean z)
 {
 	LOGI("testFunc called! %d %s", i, z ? "true" : "false");
 }
 REG_JNI(se_olsner_sidtracker_NativeTest, testFunc, "(IZ)V");
+void Java_se_olsner_sidtracker_NativeTest_testFunc_ii(JNIEnv* env, jclass apidemos, jint i, jint j)
+{
+	LOGI("testFunc(int,int) called! %d %d", i, j);
+}
+REG_JNI_(se_olsner_sidtracker_NativeTest, testFunc, testFunc_ii, "(II)V");
 
 #define USE_CLASS(klass) \
 	extern JNINativeMethod __start_JNI_##klass[1]; \

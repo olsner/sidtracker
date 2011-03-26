@@ -16,5 +16,6 @@ public class ApiDemos extends Activity {
         setContentView(R.layout.main);
         NativeTest.testFunc(42, false);
         NativeTest.testFunc(43, true);
+        NativeTest.testFunc(1, 2);
     }
 }
