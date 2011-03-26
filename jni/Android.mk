@@ -10,4 +10,8 @@ LOCAL_LDLIBS := -llog
 # LOCAL_LDLIBS += -Wl,-Map,linker.map
 LOCAL_ARM_MODE := arm
 
+SUFFIXES += .dat
+.dat.h:
+	$(PERL) samp2src.pl $* $< $@
+
 include $(BUILD_SHARED_LIBRARY)

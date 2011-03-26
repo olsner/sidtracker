@@ -21,20 +21,13 @@
 #define RESID_SIDDEFS_H
 
 // Compilation configuration.
-#define RESID_INLINING @RESID_INLINING@
-#define RESID_INLINE @RESID_INLINE@
-#define RESID_BRANCH_HINTS @RESID_BRANCH_HINTS@
+#define RESID_INLINING 1
+#define RESID_INLINE inline
+#define RESID_BRANCH_HINTS 1
 
 // Compiler specifics.
-#define HAVE_BOOL @HAVE_BOOL@
-#define HAVE_BUILTIN_EXPECT @HAVE_BUILTIN_EXPECT@
-
-// Define bool, true, and false for C++ compilers that lack these keywords.
-#if !HAVE_BOOL
-typedef int bool;
-const bool true = 1;
-const bool false = 0;
-#endif
+#define HAVE_BOOL 1
+#define HAVE_BUILTIN_EXPECT 1
 
 // Branch prediction macros, lifted off the Linux kernel.
 #if RESID_BRANCH_HINTS && HAVE_BUILTIN_EXPECT

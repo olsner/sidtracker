@@ -6,9 +6,12 @@
 #if __ARM_ARCH_7A__
 #include "resid-fp/sources.cc"
 typedef SIDFP SID;
+#define MOS6581 MOS6581FP
+static const sampling_method SAMPLING_METHOD = SAMPLE_INTERPOLATE;
 #else
-#error unsupp
-#include "resid/sources.cc"
+#include "resid-nofp/sources.cc"
+using namespace reSID;
+static const sampling_method SAMPLING_METHOD = SAMPLE_FAST;
 #endif
 
 #define LOG_(prio, fmt, ...) __android_log_print(ANDROID_LOG_##prio, "SIDTracker", fmt, ##__VA_ARGS__)
@@ -80,10 +83,12 @@ static SID& getNativeSIDData(JNIEnv* env, jobject sid)
 void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
 {
 	SID& sidfp = *new SID();
-	sidfp.set_chip_model(MOS6581FP);
+	sidfp.set_chip_model(MOS6581);
+#ifdef __ARM_ARCH_7A__
 	sidfp.set_voice_nonlinearity(0.96f);
+#endif
 	sidfp.enable_filter(true);
-	sidfp.set_sampling_parameters(985248, SAMPLE_INTERPOLATE, 44100);
+	sidfp.set_sampling_parameters(985248, SAMPLING_METHOD, 44100);
 
 	LOGV("Created a SID: %p", &sidfp);
 
