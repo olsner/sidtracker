@@ -3,6 +3,8 @@
 
 #include <android/log.h>
 
+#include "resid/sources.cc"
+
 #define LOG_(prio, fmt, ...) __android_log_print(ANDROID_LOG_##prio, "SIDTracker", fmt, ##__VA_ARGS__)
 #define LOGV(fmt, ...) LOG_(VERBOSE, fmt, ## __VA_ARGS__)
 #define LOGE(fmt, ...) LOG_(ERROR, fmt, ## __VA_ARGS__)
@@ -63,14 +65,11 @@ int jniRegisterNativeMethods(JNIEnv* env, const char* className,
 
 EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
 {
-	LOGI("Hello world from JNI_OnLoad");
-
 	JNIEnv* env = NULL;
 	if (vm->GetEnv((void**) &env, JNI_VERSION_1_4) != JNI_OK)
 	{
 		return -1;
 	}
-	LOGI("Env: %p", env);
 
 	for (JNINativeClass* p = __start_JNI_classes; p < __stop_JNI_classes; p++)
 	{
