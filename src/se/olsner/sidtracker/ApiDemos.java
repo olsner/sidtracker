@@ -22,6 +22,7 @@ public class ApiDemos extends Activity {
 			sid.write(0, 0xd6); // note, low byte
 			sid.write(1, 0x1c); // note, high byte
 
+			// FIXME Set up a threaded producer/consumer thingy for this!
 			byte gate = 16;
 			short[] buffer = new short[5012];
 			int endOfBuffer = 0;
