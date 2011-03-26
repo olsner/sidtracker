@@ -3,7 +3,7 @@
 
 #include <android/log.h>
 
-#include "resid/sources.cc"
+#include "resid-fp/sources.cc"
 
 #define LOG_(prio, fmt, ...) __android_log_print(ANDROID_LOG_##prio, "SIDTracker", fmt, ##__VA_ARGS__)
 #define LOGV(fmt, ...) LOG_(VERBOSE, fmt, ## __VA_ARGS__)
