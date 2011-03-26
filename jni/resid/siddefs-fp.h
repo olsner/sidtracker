@@ -29,7 +29,7 @@
 #endif
 
 // Define bool, true, and false for C++ compilers that lack these keywords.
-#define RESID_HAVE_BOOL @RESID_HAVE_BOOL@
+#define RESID_HAVE_BOOL 1
 
 #if !RESID_HAVE_BOOL
 typedef int bool;
@@ -60,16 +60,10 @@ const char* resid_version_string = VERSION;
 }
 
 // Inlining on/off.
-#define RESID_INLINE @RESID_INLINE@
+#define RESID_INLINE inline
+#define RESID_USE_SSE __SSE__
 
-#define RESID_USE_SSE @RESID_USE_SSE@
-
-#if @HAVE_LOGF_PROTOTYPE@
 #define HAVE_LOGF_PROTOTYPE
-#endif
-
-#if @HAVE_EXPF_PROTOTYPE@
 #define HAVE_EXPF_PROTOTYPE
-#endif
 
 #endif // not __SIDDEFS_H__
