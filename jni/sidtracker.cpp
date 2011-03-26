@@ -3,7 +3,13 @@
 
 #include <android/log.h>
 
+#if __ARM_ARCH_7A__
 #include "resid-fp/sources.cc"
+typedef SIDFP SID;
+#else
+#error unsupp
+#include "resid/sources.cc"
+#endif
 
 #define LOG_(prio, fmt, ...) __android_log_print(ANDROID_LOG_##prio, "SIDTracker", fmt, ##__VA_ARGS__)
 #define LOGV(fmt, ...) LOG_(VERBOSE, fmt, ## __VA_ARGS__)
@@ -58,7 +64,7 @@ static void primArrayPut(JNIEnv* env, jarray array, jint index, T val)
 }
 
 #define SIDCLASSNAME "se/olsner/sidtracker/SID"
-static SIDFP& getNativeSIDData(JNIEnv* env, jobject sid)
+static SID& getNativeSIDData(JNIEnv* env, jobject sid)
 {
 	static bool inited = false;
 	static jfieldID fid;
@@ -68,12 +74,12 @@ static SIDFP& getNativeSIDData(JNIEnv* env, jobject sid)
 		fid = env->GetFieldID(klass, "nativeData", "J");
 		inited = true;
 	}
-	return *(SIDFP*)env->GetLongField(sid, fid);
+	return *(SID*)env->GetLongField(sid, fid);
 }
-#define GET_SID() SIDFP& sidfp = getNativeSIDData(env, sid)
+#define GET_SID() SID& sidfp = getNativeSIDData(env, sid)
 void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
 {
-	SIDFP& sidfp = *new SIDFP();
+	SID& sidfp = *new SID();
 	sidfp.set_chip_model(MOS6581FP);
 	sidfp.set_voice_nonlinearity(0.96f);
 	sidfp.enable_filter(true);
