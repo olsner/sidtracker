@@ -24,8 +24,7 @@ public class ApiDemos extends Activity {
 
 			// FIXME Set up a threaded producer/consumer thingy for this!
 			byte gate = 16;
-			short[] buffer = new short[5012];
-			int endOfBuffer = 0;
+			short[] buffer = new short[11025];
 			long samples = 0;
 			while (true)
 			{
@@ -35,24 +34,14 @@ public class ApiDemos extends Activity {
 					samples -= 44100;
 				}
 				double time0 = System.nanoTime();
-				sid.clockFully(buffer, endOfBuffer, buffer.length - endOfBuffer);
+				sid.clockFully(buffer, 0, buffer.length);
 				double time1 = System.nanoTime();
-				System.err.println(""+(buffer.length - endOfBuffer)+" samples generated in "+nano2s(time1 - time0)+"s");
+				System.err.println(""+buffer.length+" samples generated in "+nano2s(time1 - time0)+"s");
 				int outputted = output.write(buffer, 0, buffer.length);
 				samples += outputted;
 				double time2 = System.nanoTime();
 				System.err.println(""+outputted+" samples sent to output in "+nano2s(time2 - time1)+"s");
-				if (outputted < buffer.length)
-				{
-					int n = 0;
-					for (int i = outputted; i < buffer.length; i++)
-						buffer[n++] = buffer[i];
-					endOfBuffer = n;
-				}
-				else
-				{
-					endOfBuffer = 0;
-				}
+				
 			}
 		}
 
