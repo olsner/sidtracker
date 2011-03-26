@@ -14,5 +14,7 @@ public class ApiDemos extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        NativeTest.testFunc(42, false);
+        NativeTest.testFunc(43, true);
     }
 }
