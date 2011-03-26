@@ -127,7 +127,7 @@ jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
 
 	//LOGV("%d samples %d cycles later", written, orig_dt - dt);
 	jshort* temp = (jshort*)env->GetPrimitiveArrayCritical(output, NULL);
-	memcpy(temp + offset, buffer, written);
+	memcpy(temp + offset, buffer, written * sizeof(jshort));
 	env->ReleasePrimitiveArrayCritical(output, buffer, 0);
 
 	primArrayPut(env, cycles, 0, (jint)dt);
