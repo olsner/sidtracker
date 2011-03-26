@@ -23,7 +23,9 @@
 #include <stddef.h>
 
 extern float convolve(const float *a, const float *b, size_t n);
-extern float convolve_sse(const float *a, const float *b, int n);
+#if RESID_USE_SSE
+static float convolve_sse(const float *a, const float *b, size_t n);
+#endif
 
 enum host_cpu_feature {
     HOST_CPU_MMX=1, HOST_CPU_SSE=2, HOST_CPU_SSE2=4, HOST_CPU_SSE3=8
@@ -194,10 +196,8 @@ float SIDFP::kinked_dac(const int x, const float nonlinearity, const int max)
 // ----------------------------------------------------------------------------
 SIDFP::SIDFP()
 {
-#if (RESID_USE_SSE==1)
+#if RESID_USE_SSE
   can_use_sse = (host_cpu_features() & HOST_CPU_SSE) != 0;
-#else
-  can_use_sse = false;
 #endif
 
   // Initialize pointers.

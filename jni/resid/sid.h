@@ -34,7 +34,9 @@ public:
   ~SIDFP();
 
   static float kinked_dac(const int x, const float nonlinearity, const int bits);
+#if RESID_USE_SSE
   bool sse_enabled() { return can_use_sse; }
+#endif
 
   void set_chip_model(chip_model model);
   FilterFP& get_filter() { return filter; }
@@ -122,7 +124,9 @@ protected:
   // FIR_RES filter tables (FIR_N*FIR_RES).
   float* fir;
 
+#if RESID_USE_SSE
   bool can_use_sse;
+#endif
 
   chip_model model;
 };
