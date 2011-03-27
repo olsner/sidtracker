@@ -22,6 +22,8 @@ use strict;
 
 die("Usage: samp2src name data-in src-out\n") unless @ARGV == 3;
 my ($name, $in, $out) = @ARGV;
+my $zeroes = 0;
+my $nonzeroes = 0;
 
 open(F, "<$in") or die($!);
 local $/ = undef;
@@ -51,15 +53,24 @@ print F <<\EOF;
 //  ---------------------------------------------------------------------------
 
 EOF
+# /
 
 print F "static const unsigned short ", $name, "[",length($data),"] = \n";
 print F "{\n";
 
 for (my $i = 0; $i < length($data); $i += 8) {
   print F sprintf("/* 0x%03x: */ ", $i), map(sprintf(" 0x%03x,", $_ << 4), unpack("C*", substr($data, $i, 8))), "\n";
+  for (my $n = 0; $n < 8; $n ++) {
+  if (unpack("C", substr($data, $i + $n, 1)) == 0) {
+  	$zeroes++;
+  } else {
+  	$nonzeroes++;
+  }
+  }
 }
 
 print F "};\n";
+print F "// stats: ",$zeroes," zeroes, ",$nonzeroes," nonzeroes\n";
 
 close(F) or die($!);
 
