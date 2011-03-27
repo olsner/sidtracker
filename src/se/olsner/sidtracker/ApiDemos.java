@@ -34,7 +34,7 @@ public class ApiDemos extends Activity {
 		boolean post(short[] buffer)
 		{
 			try {
-				return queue.offer(buffer, 1, TimeUnit.SECONDS);
+				return queue.offer(buffer, 1000, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				return false;
 			}
@@ -118,6 +118,9 @@ public class ApiDemos extends Activity {
 				System.err.println(""+buffer.length+" samples for "+cycles0+"cycles in "+nano2s(time1-time0)+"s");
 				cycles += cycles0;
 				samples += buffer.length;
+				// FIXME This will block for a long time waiting for the
+				// playback thread to catch up. We may need to watch a
+				// second queue for commands though...
 				queue.post(buffer);
 			}
 		}
@@ -127,6 +130,9 @@ public class ApiDemos extends Activity {
 		System.loadLibrary("sidtracker");
 	}
 
+	private SoundQueue queue = new SoundQueue();
+	private SID sid = new SID();
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -135,11 +141,19 @@ public class ApiDemos extends Activity {
 		NativeTest.testFunc(42, false);
 		NativeTest.testFunc(43, true);
 		NativeTest.testFunc(1, 2);
-
-		SoundQueue queue = new SoundQueue();
-		SID sid = new SID();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
 		new Thread(new SIDThread(sid, queue)).start();
 		new Thread(new AudioPlayerThread(queue, sid.getSampleRate())).start();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		queue.live = false;
 	}
 
 	static double nano2s(double d) {
