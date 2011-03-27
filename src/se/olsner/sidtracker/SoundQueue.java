@@ -36,7 +36,7 @@ public class SoundQueue
 	short[] get()
 	{
 		try {
-			return queue.poll(1, TimeUnit.SECONDS);
+			return queue.poll(1000, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			return null;
 		}

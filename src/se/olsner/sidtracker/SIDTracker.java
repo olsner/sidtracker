@@ -29,14 +29,6 @@ public class SIDTracker extends Activity {
 			while (queue.isLive())
 			{
 				short[] buffer = queue.get();
-				if (buffer == null) {
-					System.err.println("Nothing in queue!");
-					try {
-						queue.wait();
-					} catch (InterruptedException e) {
-					}
-					continue;
-				}
 				double time0 = System.nanoTime();
 				output.write(buffer, 0, buffer.length);
 				double time1 = System.nanoTime();
