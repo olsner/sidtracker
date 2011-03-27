@@ -1,6 +1,26 @@
 package se.olsner.sidtracker;
 
 public class SID {
+	private static final int CYCLES_PER_SECOND = 985248;
+	private static final int SAMPLE_RATE = 44100;
+	
+	public static final int MAX_FILTER_CUTOFF = 2047;
+	public static final int MAX_FREQUENCY = 3848;
+
+	public class SetRegistersMessage implements Runnable {
+		int[] values;
+		
+		public SetRegistersMessage(int[] values) {
+			this.values = values;
+		}
+
+		public void run() {
+			for (int i = 0; i < values.length; i += 2) {
+				write(values[i], values[i+1]);
+			}
+		}
+	}
+
 	public class ChangeRegisterMessage implements Runnable {
 		private int reg, and, xor;
 		
@@ -95,6 +115,14 @@ public class SID {
 	}
 
 	public int getSampleRate() {
-		return 44100;
+		return SAMPLE_RATE;
+	}
+
+	public int getCyclesPerSecond() {
+		return CYCLES_PER_SECOND;
+	}
+
+	int getFrequencyValueFromHz(int hz) {
+		return (int)((long)hz * (18<<24) / 17734475);
 	}
 }

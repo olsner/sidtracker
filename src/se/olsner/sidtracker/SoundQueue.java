@@ -42,7 +42,7 @@ public class SoundQueue
 		}
 	}
 
-	public void postControlMesssage(Runnable controlMessage) {
+	public void postControlMessage(Runnable controlMessage) {
 		try {
 			System.err.println("Offering control message...");
 			controlQueue.offer(controlMessage, 1000, TimeUnit.SECONDS);

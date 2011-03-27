@@ -6,6 +6,9 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
@@ -91,10 +94,25 @@ public class SIDTracker extends Activity {
 				sidControl.setGate(0, isChecked);
 			}
 		});
+		
+		final View touchView = findViewById(R.id.touchInputView);
+		touchView.setOnTouchListener(new OnTouchListener() {
+			public boolean onTouch(View v, MotionEvent event) {
+				int filterMin = SID.MAX_FILTER_CUTOFF / 3, filterMax = SID.MAX_FILTER_CUTOFF;
+				int freqMin = 100, freqMax = SID.MAX_FREQUENCY;
+				int x = (int)event.getX();
+				// Flip Y to make up = higher
+				int y = v.getHeight() - (int)event.getY();
+				sidControl.setFilterCutoff(filterMin + (filterMax - filterMin) * x / v.getWidth());
+				sidControl.setFrequencyHz(0, freqMin + (freqMax - freqMin) * y / v.getHeight());
+				return true;
+			}
+		});
 	}
 
 	private void initSID() {
-		sid.write(24, 15); // volume = max
+		sid.write(23, (7 << 4) | 7); // resonancy = 7, enable filter for all channels
+		sid.write(24, 16 | 15); // enable lowpass filter, volume = 15
 		sid.write(5, 0); // attack/decay
 		sid.write(6, 0xf0); // sustain/release
 

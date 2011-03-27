@@ -9,4 +9,5 @@
     <ToggleButton android:text="@string/saw_wave_enable" android:layout_width="wrap_content" android:id="@+id/toggleSAW" android:layout_height="wrap_content"></ToggleButton>
     <ToggleButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/toggleGATE" android:text="@string/gate"></ToggleButton>
 </LinearLayout>
+<View android:id="@+id/touchInputView" android:layout_width="wrap_content" android:layout_height="wrap_content"></View>
 </LinearLayout>
