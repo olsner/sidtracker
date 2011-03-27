@@ -25,27 +25,42 @@
 namespace reSID
 {
 
-// Waveform lookup tables.
-unsigned short WaveformGenerator::model_wave[2][8][1 << 12] = {
-  {
-    {0},
-    {0},
-    {0},
+static unsigned short common_model_waves[3][1 << 12] = {
+	    {0},
+	    {0},
+	    {0}
+};
+
 #include "wave6581__ST.h"
-    {0},
 #include "wave6581_P_T.h"
 #include "wave6581_PS_.h"
 #include "wave6581_PST.h"
-  },
-  {
-    {0},
-    {0},
-    {0},
 #include "wave8580__ST.h"
-    {0},
 #include "wave8580_P_T.h"
 #include "wave8580_PS_.h"
 #include "wave8580_PST.h"
+
+// Waveform lookup tables.
+const unsigned short* WaveformGenerator::model_wave[2][8] = {
+  {
+    common_model_waves[0],
+    common_model_waves[1],
+    common_model_waves[2],
+    wave6581__ST,
+    common_model_waves[0],
+    wave6581_P_T,
+    wave6581_PS_,
+    wave6581_PST,
+  },
+  {
+	common_model_waves[0],
+	common_model_waves[1],
+	common_model_waves[2],
+	wave8580__ST,
+	common_model_waves[0],
+	wave8580_P_T,
+	wave8580_PS_,
+	wave8580_PST
   }
 };
 
@@ -72,11 +87,9 @@ WaveformGenerator::WaveformGenerator()
 
       // Noise mask, triangle, sawtooth, pulse mask.
       // The triangle calculation is made branch-free, just for the hell of it.
-      model_wave[0][0][i] = model_wave[1][0][i] = 0xfff;
-      model_wave[0][1][i] = model_wave[1][1][i] =
-	((accumulator ^ -!!msb) >> 11) & 0xfff;
-      model_wave[0][2][i] = model_wave[1][2][i] = accumulator >> 12;
-      model_wave[0][4][i] = model_wave[1][4][i] = 0xfff;
+      common_model_waves[0][i] = 0xfff;
+      common_model_waves[1][i] = ((accumulator ^ -!!msb) >> 11) & 0xfff;
+      common_model_waves[2][i] = accumulator >> 12;
 
       accumulator += 0x1000;
     }

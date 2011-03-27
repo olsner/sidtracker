@@ -52,13 +52,14 @@ print F <<\EOF;
 
 EOF
 
+print F "static const unsigned short ", $name, "[",length($data),"] = \n";
 print F "{\n";
 
 for (my $i = 0; $i < length($data); $i += 8) {
   print F sprintf("/* 0x%03x: */ ", $i), map(sprintf(" 0x%03x,", $_ << 4), unpack("C*", substr($data, $i, 8))), "\n";
 }
 
-print F "},\n";
+print F "};\n";
 
 close(F) or die($!);
 
