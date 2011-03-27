@@ -55,4 +55,22 @@ public class SoundQueue
 	public Runnable pollControlMessage() {
 		return controlQueue.poll();
 	}
+
+	public void postRunningControlMessages(short[] buffer) {
+		boolean posted = false;
+		do {
+			try {
+				posted = queue.offer(buffer, 1, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// nothing...
+			}
+			Runnable control;
+			while ((control = pollControlMessage()) != null) {
+				System.out.println("Running control message "+control);
+				control.run();
+				control = null;
+			}
+			
+		} while (!posted);
+	}
 }

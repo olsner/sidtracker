@@ -69,7 +69,6 @@ public class SIDTracker extends Activity {
 			long samples = 0, cycles = 0;
 			while (queue.isLive())
 			{
-				pollControlMessage();
 				short[] buffer = queue.getBufferFromPool();
 				if (buffer == null) buffer = new short[441]; // 1/100th of a second... Maybe we should have less though?
 				/*if (samples > 44100) // 1s
@@ -83,22 +82,14 @@ public class SIDTracker extends Activity {
 				System.err.println(""+buffer.length+" samples for "+cycles0+"cycles in "+nano2s(time1-time0)+"s");
 				cycles += cycles0;
 				samples += buffer.length;
-				// FIXME This will block for a long time waiting for the
-				// playback thread to catch up. We may need to watch a
-				// second queue for commands though...
-				queue.post(buffer);
+				postBuffer(buffer);
 			}
 			
 			System.out.println("SID thread done!");
 		}
 
-		private void pollControlMessage() {
-			Runnable control = queue.pollControlMessage();
-			if (control != null)
-			{
-				System.err.println("Running control message! "+control);
-				control.run();
-			}
+		private void postBuffer(short[] buffer) {
+			queue.postRunningControlMessages(buffer);
 		}
 	}
 
