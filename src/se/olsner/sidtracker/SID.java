@@ -9,9 +9,12 @@ public class SID {
 
 	private native void nativeInit();
 
-	public native int read(int reg);
-
-	public native void write(int reg, int value);
+	private native void nativeWrite(int reg, int value);
+	
+	public void write(int reg, int value)
+	{
+		nativeWrite(reg, value);
+	}
 
 	/**
 	 * Clocks the SID, writing output samples into the given output array

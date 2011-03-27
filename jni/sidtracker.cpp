@@ -100,14 +100,14 @@ void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
 	env->SetLongField(sid, fid, (jlong)&sidfp);
 }
 REG_JNI(se_olsner_sidtracker_SID, nativeInit, "()V");
-void Java_se_olsner_sidtracker_SID_write(JNIEnv* env, jobject sid,
+void Java_se_olsner_sidtracker_SID_nativeWrite(JNIEnv* env, jobject sid,
 		jint reg, jint value)
 {
 	LOGV("Setting SID register %#x to %#x", reg, value);
 	GET_SID();
 	sidfp.write(reg, value);
 }
-REG_JNI(se_olsner_sidtracker_SID, write, "(II)V");
+REG_JNI(se_olsner_sidtracker_SID, nativeWrite, "(II)V");
 jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
 		jintArray cycles, jshortArray output, jint offset, jint length)
 {
