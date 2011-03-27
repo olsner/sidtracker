@@ -17,19 +17,29 @@ def main(argv):
 	
 	print >>h, "static unsigned short %s[4096];" % name
 	
-	print >>h, "static void init_%s() __attribute__((noinline));" % (name)
-	print >>h, "static void init_%s() { " % (name)
-	print >>h, "\tunsigned short* dest = %s;" % (name)
-	#print >>h, "\tsize_t ix = 0;"
-	saved_ix = 0;
-	for ix in xrange(0,len(data)):
-		byte = ord(data[ix])
+	print >>h, "static const unsigned char initdata_%s[] = {" % name
+	for byte in data:
+		byte = ord(byte)
 		if byte:
-			if ix != saved_ix:
-				print >>h, "\tdest += %d;" % (ix - saved_ix)
-			print >>h, "\t*dest++ = (%d) << 4;" % (byte)
-			saved_ix = ix + 1
-	print >>h, "}"
+			if zerorun:
+				conseqNonZero += 1
+			print >>h, zerorun, ',', byte, ','
+			zerorun = 0
+			nonZero += 1
+			printed += 2
+		else:
+			zero += 1
+			zerorun += 1
+			if zerorun == 256:
+				print >>h, "255, 0,"
+				zerorun = 0
+				printed += 2
+	print >>h, "};"
 	
+	print >>h, "static void init_%s() { init_wavedata(%s, initdata_%s, %d); }" % (name, name, name, printed / 2)
+
+	
+	print >>h, "// Zeroes:", zero, "Non-zero:", nonZero, "Non-zero after non-zero:", conseqNonZero,"Printed:", printed
+
 if __name__=='__main__':
 	sys.exit(main(sys.argv))
