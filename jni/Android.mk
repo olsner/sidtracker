@@ -10,7 +10,6 @@ LOCAL_CFLAGS := -fvisibility=hidden -fvisibility-inlines-hidden -Wall -O3
 LOCAL_LDLIBS := -llog
 # LOCAL_LDLIBS += -Wl,-Map,linker.map
 LOCAL_ARM_MODE := arm
-PERL ?= perl
 PYTHON ?= python
 
 SAMP2SRC := $(MY_JNI_DIR)/resid-nofp/samp2src.py
