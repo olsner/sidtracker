@@ -4,6 +4,9 @@
 #include <android/log.h>
 
 #if __ARM_ARCH_7A__
+#define USE_RESID_FP 1
+#endif
+#if USE_RESID_FP
 #include "resid-fp/sources.cc"
 typedef SIDFP SID;
 #define MOS6581 MOS6581FP
@@ -84,7 +87,7 @@ void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
 {
 	SID& sidfp = *new SID();
 	sidfp.set_chip_model(MOS6581);
-#ifdef __ARM_ARCH_7A__
+#if USE_RESID_FP
 	sidfp.set_voice_nonlinearity(0.96f);
 #endif
 	sidfp.enable_filter(true);
