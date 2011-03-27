@@ -106,9 +106,9 @@ public class SIDTracker extends Activity {
 		System.loadLibrary("sidtracker");
 	}
 
-	private SoundQueue queue = new SoundQueue();
 	private SID sid = new SID();
-	private SIDControl sidControl = new SIDControl(sid, queue);
+	private SoundQueue queue;
+	private SIDControl sidControl;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -131,6 +131,8 @@ public class SIDTracker extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		queue = new SoundQueue();
+		sidControl = new SIDControl(sid, queue);
 		new Thread(new SIDThread(sid, queue)).start();
 		new Thread(new AudioPlayerThread(queue, sid.getSampleRate())).start();
 	}
@@ -139,6 +141,8 @@ public class SIDTracker extends Activity {
 	protected void onPause() {
 		super.onPause();
 		queue.live = false;
+		queue = null;
+		sidControl = null;
 	}
 
 	static double nano2s(double d) {
