@@ -9,7 +9,7 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
 
-public class ApiDemos extends Activity {
+public class SIDTracker extends Activity {
 
 	private static class SoundQueue
 	{
