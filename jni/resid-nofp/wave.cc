@@ -31,6 +31,16 @@ static unsigned short common_model_waves[3][1 << 12] = {
 	    {0}
 };
 
+static void init_wavedata(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
+{
+	const unsigned char* end = initdata + initdata_len;
+	while (initdata < end)
+	{
+		dest += *initdata++;
+		*dest = (*initdata++) << 4;
+	}
+}
+
 #include "wave6581__ST.h"
 #include "wave6581_P_T.h"
 #include "wave6581_PS_.h"
@@ -39,6 +49,18 @@ static unsigned short common_model_waves[3][1 << 12] = {
 #include "wave8580_P_T.h"
 #include "wave8580_PS_.h"
 #include "wave8580_PST.h"
+
+static void init_waves()
+{
+	init_wave6581__ST();
+	init_wave6581_P_T();
+	init_wave6581_PS_();
+	init_wave6581_PST();
+	init_wave8580__ST();
+	init_wave8580_P_T();
+	init_wave8580_PS_();
+	init_wave8580_PST();
+}
 
 // Waveform lookup tables.
 const unsigned short* WaveformGenerator::model_wave[2][8] = {
@@ -80,6 +102,8 @@ WaveformGenerator::WaveformGenerator()
   static bool class_init;
 
   if (!class_init) {
+	init_waves();
+
     // Calculate tables for normal waveforms.
     accumulator = 0;
     for (int i = 0; i < (1 << 12); i++) {

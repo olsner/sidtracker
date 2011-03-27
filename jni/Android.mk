@@ -11,10 +11,11 @@ LOCAL_LDLIBS := -llog
 # LOCAL_LDLIBS += -Wl,-Map,linker.map
 LOCAL_ARM_MODE := arm
 PERL ?= perl
+PYTHON ?= python
 
-SAMP2SRC := $(MY_JNI_DIR)/resid-nofp/samp2src.pl
+SAMP2SRC := $(MY_JNI_DIR)/resid-nofp/samp2src.py
 
 %.h: %.dat $(SAMP2SRC)
-	$(PERL) $(SAMP2SRC) $(notdir $*) $< $@
+	$(PYTHON) $(SAMP2SRC) $(notdir $*) $< $@
 
 include $(BUILD_SHARED_LIBRARY)
