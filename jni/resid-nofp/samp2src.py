@@ -15,7 +15,7 @@ def main(argv):
 	zerorun = 0
 	printed = 0
 	
-	print >>h, "static unsigned short %s[4096] = {0};" % name
+	print >>h, "static unsigned short %s[4096];" % name
 	
 	print >>h, "static const unsigned char initdata_%s[] = {" % name
 	for byte in data:

@@ -25,11 +25,7 @@
 namespace reSID
 {
 
-static unsigned short common_model_waves[3][1 << 12] = {
-	    {0},
-	    {0},
-	    {0}
-};
+static unsigned short common_model_waves[3][1 << 12];
 
 static void init_wavedata(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
 {
