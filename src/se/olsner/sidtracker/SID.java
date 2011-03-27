@@ -1,6 +1,25 @@
 package se.olsner.sidtracker;
 
 public class SID {
+	public class ChangeRegisterMessage implements Runnable {
+		private int reg, and, xor;
+		
+		public ChangeRegisterMessage(int reg, int and, int xor) {
+			this.reg = reg;
+			this.and = and;
+			this.xor = xor;
+		}
+
+		public void run() {
+			write(reg, (read(reg) & and) ^ xor);
+		}
+		
+		@Override
+		public String toString() {
+			return "SID.ChangeRegisterMessage("+reg+" &= "+and+" ^= "+xor+")";
+		}
+	}
+	
 	private long nativeData;
 	private int[] registerValues = new int[32];
 

@@ -2,4 +2,6 @@
 <resources>
     <string name="hello">Hello World, ApiDemos!</string>
     <string name="app_name">SID Tracker</string>
+    <string name="saw_wave_enable">SAW</string>
+    <string name="gate">GATE</string>
 </resources>
