@@ -1,7 +1,8 @@
 package se.olsner.sidtracker;
 
 public class SID {
-	long nativeData;
+	private long nativeData;
+	private int[] registerValues = new int[32];
 
 	public SID() {
 		nativeInit();
@@ -9,10 +10,17 @@ public class SID {
 
 	private native void nativeInit();
 
+	public int read(int reg)
+	{
+		assert reg > 0 && reg < 0x19;
+		return registerValues[reg];
+	}
+
 	private native void nativeWrite(int reg, int value);
 	
 	public void write(int reg, int value)
 	{
+		registerValues[reg] = value;
 		nativeWrite(reg, value);
 	}
 
