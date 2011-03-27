@@ -29,10 +29,7 @@ public class SIDTracker extends Activity {
 			while (queue.isLive())
 			{
 				short[] buffer = queue.get();
-				double time0 = System.nanoTime();
 				output.write(buffer, 0, buffer.length);
-				double time1 = System.nanoTime();
-				System.err.println(""+buffer.length+" samples output in "+nano2s(time1-time0)+"s");
 				queue.releaseBufferToPool(buffer);
 			}
 			
@@ -58,22 +55,12 @@ public class SIDTracker extends Activity {
 			sid.write(1, 0x1c); // note, high byte
 
 			sid.write(4, 16); // gate/waveform: triangle wave, gate=0
-			long samples = 0, cycles = 0;
+			
 			while (queue.isLive())
 			{
 				short[] buffer = queue.getBufferFromPool();
 				if (buffer == null) buffer = new short[441]; // 1/100th of a second... Maybe we should have less though?
-				/*if (samples > 44100) // 1s
-				{
-					sid.write(4, gate ^= 1);
-					samples -= 44100;
-				}*/
-				double time0 = System.nanoTime();
-				long cycles0 = sid.clockFully(buffer, 0, buffer.length);
-				double time1 = System.nanoTime();
-				System.err.println(""+buffer.length+" samples for "+cycles0+"cycles in "+nano2s(time1-time0)+"s");
-				cycles += cycles0;
-				samples += buffer.length;
+				sid.clockFully(buffer, 0, buffer.length);
 				postBuffer(buffer);
 			}
 			
