@@ -33,6 +33,8 @@ public class SIDTracker extends Activity {
 				queue.releaseBufferToPool(buffer);
 			}
 			
+			output.stop();
+			output.release();
 			System.out.println("Audio thread done!");
 		}
 	}
@@ -47,15 +49,6 @@ public class SIDTracker extends Activity {
 		}
 
 		public void run() {
-			sid.write(24, 15); // volume = max
-			sid.write(5, 0); // attack/decay
-			sid.write(6, 0xf0); // sustain/release
-
-			sid.write(0, 0xd6); // note, low byte
-			sid.write(1, 0x1c); // note, high byte
-
-			sid.write(4, 16); // gate/waveform: triangle wave, gate=0
-			
 			while (queue.isLive())
 			{
 				short[] buffer = queue.getBufferFromPool();
@@ -76,18 +69,20 @@ public class SIDTracker extends Activity {
 		System.loadLibrary("sidtracker");
 	}
 
+	// FIXME This state needs to move out of the Activity since that'll get recreated at various times (rotation, for instance...)
 	private SID sid = new SID();
-	private SoundQueue queue;
-	private SIDControl sidControl;
+	private SoundQueue queue = new SoundQueue();
+	private SIDControl sidControl = new SIDControl(sid, queue);
+	
+	public SIDTracker() {
+		initSID();
+	}
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		NativeTest.testFunc(42, false);
-		NativeTest.testFunc(43, true);
-		NativeTest.testFunc(1, 2);
 		
 		ToggleButton gateToggle = (ToggleButton)findViewById(R.id.toggleGATE);
 		gateToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -97,12 +92,22 @@ public class SIDTracker extends Activity {
 			}
 		});
 	}
+
+	private void initSID() {
+		sid.write(24, 15); // volume = max
+		sid.write(5, 0); // attack/decay
+		sid.write(6, 0xf0); // sustain/release
+
+		sid.write(0, 0xd6); // note, low byte
+		sid.write(1, 0x1c); // note, high byte
+
+		sid.write(4, 32); // gate/waveform: triangle wave, gate=0
+	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		queue = new SoundQueue();
-		sidControl = new SIDControl(sid, queue);
+		queue.resume();
 		new Thread(new SIDThread(sid, queue)).start();
 		new Thread(new AudioPlayerThread(queue, sid.getSampleRate())).start();
 	}
@@ -110,9 +115,7 @@ public class SIDTracker extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		queue.live = false;
-		queue = null;
-		sidControl = null;
+		queue.pause();
 	}
 
 	static double nano2s(double d) {

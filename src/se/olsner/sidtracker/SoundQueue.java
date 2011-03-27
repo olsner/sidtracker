@@ -8,7 +8,7 @@ public class SoundQueue
 	ArrayBlockingQueue<short[]> queue = new ArrayBlockingQueue<short[]>(2);
 	ArrayBlockingQueue<short[]> pool = new ArrayBlockingQueue<short[]>(10);
 	ArrayBlockingQueue<Runnable> controlQueue = new ArrayBlockingQueue<Runnable>(1);
-	boolean live = true;
+	boolean live = false; // The queue starts out paused, use resume() before starting producers and consumers
 	
 	public boolean isLive() {
 		return live;
@@ -72,5 +72,19 @@ public class SoundQueue
 			}
 			
 		} while (!posted);
+	}
+
+	public void pause() {
+		live = false;
+		// TODO Post something to make all waiting threads immediately stop waiting and return without a message...
+		queue.clear();
+		controlQueue.clear();
+	}
+	
+	/**
+	 * Call before starting up producers and consumers
+	 */
+	public void resume() {
+		live = true;
 	}
 }
