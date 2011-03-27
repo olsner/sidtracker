@@ -44,10 +44,10 @@ public class SID {
 	private int[] registerValues = new int[32];
 
 	public SID() {
-		nativeInit();
+		nativeInit(CYCLES_PER_SECOND, SAMPLE_RATE);
 	}
 
-	private native void nativeInit();
+	private native void nativeInit(int cyclesPerSecond, int sampleRate);
 
 	public int read(int reg)
 	{

@@ -83,7 +83,7 @@ static SID& getNativeSIDData(JNIEnv* env, jobject sid)
 	return *(SID*)env->GetLongField(sid, fid);
 }
 #define GET_SID() SID& sidfp = getNativeSIDData(env, sid)
-void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
+void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid, jint cyclesPerSecond, jint sampleRate)
 {
 	SID& sidfp = *new SID();
 	sidfp.set_chip_model(MOS6581);
@@ -91,7 +91,7 @@ void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
 	sidfp.set_voice_nonlinearity(0.96f);
 #endif
 	sidfp.enable_filter(true);
-	sidfp.set_sampling_parameters(985248, SAMPLING_METHOD, 44100);
+	sidfp.set_sampling_parameters(cyclesPerSecond, SAMPLING_METHOD, sampleRate);
 
 	LOGV("Created a SID: %p", &sidfp);
 
@@ -99,7 +99,7 @@ void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid)
 	jfieldID fid = env->GetFieldID(klass, "nativeData", "J");
 	env->SetLongField(sid, fid, (jlong)&sidfp);
 }
-REG_JNI(se_olsner_sidtracker_SID, nativeInit, "()V");
+REG_JNI(se_olsner_sidtracker_SID, nativeInit, "(II)V");
 void Java_se_olsner_sidtracker_SID_nativeWrite(JNIEnv* env, jobject sid,
 		jint reg, jint value)
 {
