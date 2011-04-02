@@ -27,7 +27,7 @@ namespace reSID
 
 static unsigned short common_model_waves[3][1 << 12];
 
-static void init_wavedata(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
+static void init_wavedata_zerorun(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
 {
 	const unsigned char* end = initdata + initdata_len;
 	while (initdata < end)

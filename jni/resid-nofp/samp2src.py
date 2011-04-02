@@ -36,7 +36,7 @@ def main(argv):
 				printed += 2
 	print >>h, "};"
 	
-	print >>h, "static void init_%s() { init_wavedata(%s, initdata_%s, %d); }" % (name, name, name, printed / 2)
+	print >>h, "static void init_%s() { init_wavedata_zerorun(%s, initdata_%s, %d); }" % (name, name, name, printed / 2)
 
 	
 	print >>h, "// Zeroes:", zero, "Non-zero:", nonZero, "Non-zero after non-zero:", conseqNonZero,"Printed:", printed
