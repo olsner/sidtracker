@@ -118,8 +118,8 @@ def main(argv):
 	stats['Saved direct-RLE'] = len(data) - len(rleDirectly)
 	
 	for x,y in pairify(encoded):
-		assert x >= 0 and x < 256
-		assert y >= 0 and y < 256
+		assert x >= 0 and x < 256, x
+		assert y >= 0 and y < 256, y
 		print >>h, x, ',', y, ','
 
 	print >>h, "};"
