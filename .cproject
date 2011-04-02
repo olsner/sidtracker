@@ -20,7 +20,7 @@
 					<folderInfo id="com.android.toolchain.gcc.910068983.2113843913" name="/" resourcePath="">
 						<toolChain id="com.android.toolchain.gcc.580871964" name="com.android.toolchain.gcc" superClass="com.android.toolchain.gcc">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.874570549" name="Android Platform" osList="all" superClass="com.android.targetPlatform"/>
-							<builder id="com.android.builder.2028592817" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.android.builder">
+							<builder arguments="ndk-build" command="time" id="com.android.builder.2028592817" incrementalBuildTarget="V=1 -j2" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.android.builder">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="libs"/>
 								</outputEntries>
@@ -36,7 +36,7 @@
 								<inputType id="com.android.tool.compiler.g++.input.1506717246" superClass="com.android.tool.compiler.g++.input"/>
 							</tool>
 							<tool id="com.android.tool.compiler.c.1851302552" name="Android GCC" superClass="com.android.tool.compiler.c">
-								<option id="gnu.c.compiler.option.include.paths.1433368519" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1433368519" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/arm-linux-androideabi/include"/>
 									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include"/>
 									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed"/>
@@ -51,7 +51,7 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1388178668" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
-								<option id="gnu.both.asm.option.include.paths.1227589270" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.1227589270" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/arm-linux-androideabi/include"/>
 									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include"/>
 									<listOptionValue builtIn="false" value="/Users/salparot/Documents/Android/android-ndk-r5b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed"/>
@@ -317,6 +317,7 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
