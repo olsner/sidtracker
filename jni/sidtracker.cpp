@@ -114,7 +114,7 @@ jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
 {
 	GET_SID(0);
 	cycle_count dt = primArrayGet<jint>(env, cycles, 0);
-	const cycle_count orig_dt = dt;
+	//const cycle_count orig_dt = dt;
 	jshort* buffer = new jshort[length];
 	if (!buffer)
 		return 0;
@@ -123,7 +123,7 @@ jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
 	jint written = 0;
 	while (length > written && dt)
 	{
-		cycle_count prev_dt = dt;
+		//cycle_count prev_dt = dt;
 		int written0 = sidfp.clock(dt, buffer + written, length - written);
 		//LOGV("Clocked %d and got %d samples", prev_dt - dt, written0);
 		written += written0;
