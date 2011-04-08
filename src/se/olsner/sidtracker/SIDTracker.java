@@ -6,6 +6,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -105,12 +106,26 @@ public class SIDTracker extends Activity {
 				int y = v.getHeight() - (int)event.getY();
 				sidControl.setFilterCutoff(filterMin + (filterMax - filterMin) * x / v.getWidth());
 				sidControl.setFrequencyHz(0, freqMin + (freqMax - freqMin) * y / v.getHeight());
+				sidControl.setGate(0, getPointerStateFromAction(event.getActionMasked()));
 				return true;
+			}
+
+			private boolean getPointerStateFromAction(int actionMasked) {
+				switch (actionMasked)
+				{
+				case MotionEvent.ACTION_DOWN:
+				case MotionEvent.ACTION_MOVE:
+				case MotionEvent.ACTION_POINTER_DOWN:
+					return true;
+				default:
+					return false;
+				}
 			}
 		});
 	}
 
 	private void initSID() {
+		Log.i("SIDTracker", "SID Initialized: "+sid);
 		sid.write(23, (7 << 4) | 7); // resonancy = 7, enable filter for all channels
 		sid.write(24, 16 | 15); // enable lowpass filter, volume = 15
 		sid.write(5, 0); // attack/decay
