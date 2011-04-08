@@ -2,6 +2,7 @@
 #include <jni.h>
 
 #include <android/log.h>
+#include <assert.h>
 
 #if __ARM_ARCH_7A__
 #define USE_RESID_FP 1

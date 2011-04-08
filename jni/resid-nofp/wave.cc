@@ -25,8 +25,6 @@
 namespace reSID
 {
 
-static unsigned short common_model_waves[3][1 << 12];
-
 static void init_wavedata_zerorun(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
 {
 	const unsigned char* end = initdata + initdata_len;
@@ -34,6 +32,27 @@ static void init_wavedata_zerorun(unsigned short* dest, const unsigned char* ini
 	{
 		dest += *initdata++;
 		*dest = (*initdata++) << 4;
+	}
+}
+static void init_wavedata_rle(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
+{
+	unsigned short* destEnd = dest + 4096;
+	const unsigned char* end = initdata + initdata_len;
+	while (initdata < end)
+	{
+		size_t count = *initdata++;
+		unsigned short val = (*initdata++) << 4;
+		if (val)
+		{
+			do
+			{
+				*dest++ = val;
+			} while (count--);
+		}
+		else
+		{
+			dest += count + 1;
+		}
 	}
 }
 
@@ -57,6 +76,8 @@ static void init_waves()
 	init_wave8580_PS_();
 	init_wave8580_PST();
 }
+
+static unsigned short common_model_waves[3][1 << 12];
 
 // Waveform lookup tables.
 const unsigned short* WaveformGenerator::model_wave[2][8] = {
