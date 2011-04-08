@@ -98,15 +98,32 @@ public class SIDTracker extends Activity {
 		
 		final View touchView = findViewById(R.id.touchInputView);
 		touchView.setOnTouchListener(new OnTouchListener() {
+			int lastFilter = -1, lastFreq = -1;
+			boolean lastGate = false;
+			
 			public boolean onTouch(View v, MotionEvent event) {
 				int filterMin = SID.MAX_FILTER_CUTOFF / 3, filterMax = SID.MAX_FILTER_CUTOFF;
 				int freqMin = 100, freqMax = SID.MAX_FREQUENCY;
 				int x = (int)event.getX();
 				// Flip Y to make up = higher
 				int y = v.getHeight() - (int)event.getY();
-				sidControl.setFilterCutoff(filterMin + (filterMax - filterMin) * x / v.getWidth());
-				sidControl.setFrequencyHz(0, freqMin + (freqMax - freqMin) * y / v.getHeight());
-				sidControl.setGate(0, getPointerStateFromAction(event.getActionMasked()));
+				int filter = filterMin + (filterMax - filterMin) * x / v.getWidth();
+				int freq = freqMin + (freqMax - freqMin) * y / v.getHeight();
+				if (lastFilter != filter)
+				{
+					sidControl.setFilterCutoff(filter);
+					lastFilter = filter;
+				}
+				if (lastFreq != freq)
+				{
+					sidControl.setFrequencyHz(0, freq);
+					lastFreq = freq;
+				}
+				boolean gate = getPointerStateFromAction(event.getActionMasked());
+				if (lastGate != gate) {
+					sidControl.setGate(0, gate);
+					lastGate = gate;
+				}
 				return true;
 			}
 
