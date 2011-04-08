@@ -29,24 +29,35 @@ def zeroRunEncode(data, stat = None, maxValue = 256, assumePadded = False):
 		if zerorun:
 			yield zerorun-1, 0
 
-def runLengthEncode(data, stat = None, maxValue = 256):
+def runLengthEncode(data, stat = None, maxValue = 256, assumePadded = False):
 	data = iter(data)
-	runlength = 1
-	lastX = data.next()
+	runlength = 0
+	lastX = None
 	for x in data:
 		if x == lastX:
 			runlength += 1
-		elif runlength >= maxValue or x != lastX:
-			yield runlength-1, lastX
+		else:
+			if runlength:
+				yield runlength-1, lastX
 			lastX = x
 			runlength = 1
-	assert runlength > 0
-	yield runlength-1, lastX
+		if runlength >= maxValue:
+			yield runlength-1, lastX
+			lastX = None
+			runlength = 0
+	
+	if runlength and (not assumePadded or lastX):
+		yield runlength-1, lastX
 
-def runLengthDecode(data):
+def runLengthDecode(data, len = None):
+	written = 0
 	for count,x in data:
 		for _ in xrange(1 + count):
 			yield x
+		written += 1 + count
+	if len is not None:
+		for _ in xrange(len - written):
+			yield 0
 
 def unpairify(xs):
 	for x,y in xs:
@@ -91,13 +102,14 @@ def main(argv):
 	data = map(ord, data)
 	encoded = list(zeroRunEncode(data, stats, assumePadded = True))
 	
-	rleEncoded = list(runLengthEncode(encoded, stats))
-	stats['RLE-encoded size after zero-run coding'] = len(rleEncoded) * 3
-	assert list(runLengthDecode(rleEncoded)) == encoded
+	#rleEncoded = list(runLengthEncode(encoded, stats))
+	#stats['RLE-encoded size after zero-run coding'] = len(rleEncoded) * 3
+	#assert list(runLengthDecode(rleEncoded, len(data))) == encoded, repr(rleDecoded, )
 	
-	rleDirectly = list(runLengthEncode(data))
+	rleDirectly = list(runLengthEncode(data, assumePadded = True))
 	stats['RLE-encoded directly'] = len(rleDirectly) * 2
-	assert list(runLengthDecode(rleDirectly)) == data
+	rleDirectlyDec = list(runLengthDecode(rleDirectly, len(data)))
+	assert rleDirectlyDec == data, repr((rleDirectly, rleDirectlyDec, data))
 	
 	encoded = list(unpairify(encoded))
 	assert len(encoded) % 2 == 0
@@ -114,17 +126,19 @@ def main(argv):
 	stats['Printed'] = len(encoded)
 	
 	stats['Saved encoded'] = len(data) - len(encoded)
-	stats['Saved encoded-RLE'] = len(data) - len(rleEncoded)
+	#stats['Saved encoded-RLE'] = len(data) - len(rleEncoded)
 	stats['Saved direct-RLE'] = len(data) - len(rleDirectly)
 	
-	for x,y in pairify(encoded):
+	#print repr(rleDirectly)
+	numBytes = 0
+	for x in unpairify(rleDirectly):
 		assert x >= 0 and x < 256, x
-		assert y >= 0 and y < 256, y
-		print >>h, x, ',', y, ','
+		print >>h, x, ',',
+		numBytes += 1
 
 	print >>h, "};"
 	
-	print >>h, "static void init_%s() { init_wavedata_zerorun(%s, initdata_%s, %d); }" % (name, name, name, len(encoded) / 2)
+	print >>h, "static void init_%s() { init_wavedata_rle(%s, initdata_%s, %d); }" % (name, name, name, numBytes)
 
 	for k,v in stats.iteritems():
 		print >>h, '// ', k + ':', v
