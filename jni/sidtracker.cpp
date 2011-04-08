@@ -71,7 +71,7 @@ static void primArrayPut(JNIEnv* env, jarray array, jint index, T val)
 }
 
 #define SIDCLASSNAME "se/olsner/sidtracker/SID"
-static SID& getNativeSIDData(JNIEnv* env, jobject sid)
+static SID* getNativeSIDData(JNIEnv* env, jobject sid)
 {
 	static bool inited = false;
 	static jfieldID fid;
@@ -81,9 +81,9 @@ static SID& getNativeSIDData(JNIEnv* env, jobject sid)
 		fid = env->GetFieldID(klass, "nativeData", "J");
 		inited = true;
 	}
-	return *(SID*)env->GetLongField(sid, fid);
+	return sid ? (SID*)env->GetLongField(sid, fid) : NULL;
 }
-#define GET_SID() SID& sidfp = getNativeSIDData(env, sid)
+#define GET_SID(ret) SID* sidfpp = getNativeSIDData(env, sid); if (!sidfpp) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), ""); return ret; } SID& sidfp = *sidfpp
 void Java_se_olsner_sidtracker_SID_nativeInit(JNIEnv* env, jobject sid, jint cyclesPerSecond, jint sampleRate)
 {
 	SID& sidfp = *new SID();
@@ -112,7 +112,7 @@ REG_JNI(se_olsner_sidtracker_SID, nativeWrite, "(II)V");
 jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
 		jintArray cycles, jshortArray output, jint offset, jint length)
 {
-	GET_SID();
+	GET_SID(0);
 	cycle_count dt = primArrayGet<jint>(env, cycles, 0);
 	const cycle_count orig_dt = dt;
 	jshort* buffer = new jshort[length];
