@@ -68,23 +68,29 @@ void usage(FILE* out)
 	fprintf(out, "Usage: sidtoasid INPUT OUTPUT\n");
 }
 
-unsigned writes = 0;
 struct asidemu: public sidemu
 {
 	uint8_t regs[256];
 	c64env* env;
-	unsigned long lastWrite;
 	deltafile outfile;
+	unsigned long lastWrite;
+	unsigned long writes;
 
 	asidemu(const char* outfile,
 			sidbuilder* builder, c64env* env, sid2_model_t model):
 		sidemu(builder),
 		env(env),
 		outfile(outfile),
-		lastWrite(0)
+		lastWrite(0),
+		writes(0)
 	{
 		reset(0);
-		printf("init: model := %d\n", model);
+		printf("init %p: model := %d\n", this, model);
+	}
+
+	~asidemu()
+	{
+		printf("done %p: %lu writes\n", this, writes);
 	}
 
 	void reset(uint8_t vol)
@@ -101,14 +107,15 @@ struct asidemu: public sidemu
 
 	void write(uint8_t addr, uint8_t data)
 	{
-		writes++;
 		unsigned long now = getTime();
 		//fprintf(stderr, "+%lu %#x := %#x\n", now - lastWrite, addr, data);
-		outfile.writeInt(now - lastWrite);
 		uint8_t delta = regs[addr] ^ data;
+		outfile.writeInt(now - lastWrite);
 		outfile.write(delta);
+
 		regs[addr] = data;
 		lastWrite = now;
+		writes++;
 	}
 
 	event_clock_t getTime() const
@@ -132,23 +139,36 @@ struct asidbuilder: public sidbuilder
 {
 	const char* outfile;
 	bool locked;
+	sidemu* emu;
 
 	asidbuilder(const char* outfile):
 		sidbuilder("aSID converter"),
 		outfile(outfile),
-		locked(false)
+		locked(false),
+		emu(NULL)
 	{}
+
+	~asidbuilder()
+	{
+		delete emu;
+	}
 
 	sidemu* lock(c64env* env, sid2_model_t model)
 	{
-		assert(!locked);
-		return new asidemu(outfile, this, env, model);
+		if (!locked && !emu)
+		{
+			emu = new asidemu(outfile, this, env, model);
+			locked = emu != NULL;
+			return emu;
+		}
+		return NULL;
 	}
 	void unlock(sidemu* device)
 	{
-		assert(locked);
+		assert(locked && emu == device);
 		delete device;
 		locked = false;
+		emu = NULL;
 	}
 
 	const char* credits() { return "SID to SID* conversion, by Simon Brenner"; }
@@ -221,7 +241,6 @@ int main(int argc, const char* argv[])
 		samples += res;
 		//printf("%lu: State now %d (play returned %d)\n", (unsigned long)player.time(), player.state(), x);
 		//printf("Error: %s\n", player.error());
-		printf("Writes: %u, time %f, samples %lu\n", writes, (float)player.time() / player.timebase(), samples);
 		if ((float)player.time() / player.timebase() > seconds)
 		{
 			break;
