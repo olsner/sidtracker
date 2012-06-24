@@ -17,7 +17,7 @@ struct deltafile
 
 	deltafile(const char* filename)
 	{
-		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC);
+		fd = creat(filename, 0666);
 		assert(fd >= 0);
 	}
 
