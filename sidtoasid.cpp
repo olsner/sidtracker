@@ -108,13 +108,18 @@ struct asidemu: public sidemu
 	void write(uint8_t addr, uint8_t data)
 	{
 		unsigned long now = getTime();
-		//fprintf(stderr, "+%lu %#x := %#x\n", now - lastWrite, addr, data);
-		uint8_t delta = regs[addr] ^ data;
-		outfile.writeInt(now - lastWrite);
-		outfile.write(delta);
+		//fprintf(stderr, "%lu +%lu %#x := %#x\n", now, now - lastWrite, addr, data);
+		if (now >= lastWrite)
+		{
+			uint8_t delta = regs[addr] ^ data;
+			outfile.writeInt(now - lastWrite);
+			outfile.write(addr);
+			outfile.write(delta);
+
+			lastWrite = now;
+		}
 
 		regs[addr] = data;
-		lastWrite = now;
 		writes++;
 	}
 
