@@ -4,6 +4,7 @@
 #include <android/log.h>
 #include <assert.h>
 
+// TODO Enable FP on Atom. cpuid asm bails out due to clobbering PIC register
 #if __ARM_ARCH_7A__
 #define USE_RESID_FP 1
 #endif
