@@ -41,7 +41,7 @@ public class SID {
 	}
 	
 	private long nativeData;
-	private int[] registerValues = new int[32];
+	private byte[] registerValues = new byte[32];
 
 	public SID() {
 		nativeInit(CYCLES_PER_SECOND, SAMPLE_RATE);
@@ -51,15 +51,15 @@ public class SID {
 
 	public int read(int reg)
 	{
-		assert reg > 0 && reg < 0x19;
-		return registerValues[reg];
+		assert reg >= 0 && reg < 0x1d;
+		return registerValues[reg] & 0xff;
 	}
 
 	private native void nativeWrite(int reg, int value);
 	
 	public void write(int reg, int value)
 	{
-		registerValues[reg] = value;
+		registerValues[reg] = (byte)value;
 		nativeWrite(reg, value);
 	}
 
