@@ -110,7 +110,7 @@ void Java_se_olsner_sidtracker_SID_nativeWrite(JNIEnv* env, jobject sid,
 	sidfp.write(reg, value);
 }
 REG_JNI(se_olsner_sidtracker_SID, nativeWrite, "(II)V");
-jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
+jint Java_se_olsner_sidtracker_SID_nativeClock(JNIEnv* env, jobject sid,
 		jintArray cycles, jshortArray output, jint offset, jint length)
 {
 	GET_SID(0);
@@ -139,7 +139,7 @@ jint Java_se_olsner_sidtracker_SID_clock(JNIEnv* env, jobject sid,
 	delete[] buffer;
 	return written;
 }
-REG_JNI(se_olsner_sidtracker_SID, clock, "([I[SII)I");
+REG_JNI(se_olsner_sidtracker_SID, nativeClock, "([I[SII)I");
 REG_CLASS("se/olsner/sidtracker/SID", se_olsner_sidtracker_SID);
 
 int jniRegisterNativeMethods(JNIEnv* env, const char* className,

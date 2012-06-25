@@ -1,3 +1,4 @@
+// vim:noet:
 package se.olsner.sidtracker;
 
 public class SID {
@@ -42,6 +43,7 @@ public class SID {
 	
 	private long nativeData;
 	private byte[] registerValues = new byte[32];
+	private long cycleCounter;
 
 	public SID() {
 		nativeInit(CYCLES_PER_SECOND, SAMPLE_RATE);
@@ -63,6 +65,11 @@ public class SID {
 		nativeWrite(reg, value);
 	}
 
+	public void xor(int reg, int value)
+	{
+		write(reg, read(reg) ^ value);
+	}
+
 	/**
 	 * Clocks the SID, writing output samples into the given output array
 	 * (mono).
@@ -80,7 +87,15 @@ public class SID {
 	 *            the maximum number of output samples to write
 	 * @return The number of samples successfully written to output
 	 */
-	public native int clock(int[] cycles, short[] output, int offset, int length);
+	public int clock(int[] cycles, short[] output, int offset, int length)
+	{
+		int requested = cycles[0];
+		int res = nativeClock(cycles, output, offset, length);
+		cycleCounter += cycles[0] - requested;
+		return res;
+	}
+
+	private native int nativeClock(int[] cycles, short[] output, int offset, int length);
 
 	private static final int CLOCK_CHUNK = 100000;
 
@@ -120,6 +135,13 @@ public class SID {
 
 	public int getCyclesPerSecond() {
 		return CYCLES_PER_SECOND;
+	}
+
+	/**
+	 * Get number of cycles clocked from initialization of the SID.
+	 */
+	public long getCycleCount() {
+		return cycleCounter;
 	}
 
 	int getFrequencyValueFromHz(int hz) {

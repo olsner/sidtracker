@@ -1,3 +1,4 @@
+// vim:noet:
 package se.olsner.sidtracker;
 
 import android.app.Activity;
@@ -12,6 +13,8 @@ import android.view.View.OnTouchListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
+
+import java.io.*;
 
 public class SIDTracker extends Activity {
 
@@ -157,7 +160,12 @@ public class SIDTracker extends Activity {
 	protected void onResume() {
 		super.onResume();
 		queue.resume();
-		new Thread(new SIDThread(sid, queue)).start();
+		try {
+			new Thread(new SIDBackingTrack(sid, queue, getAssets().open("spellbound.asid"))).start();
+		} catch (IOException e) {
+			Log.e("SIDTracker", "Failed loading backing track", e);
+			new Thread(new SIDThread(sid, queue)).start();
+		}
 		new Thread(new AudioPlayerThread(queue, sid.getSampleRate())).start();
 	}
 	
