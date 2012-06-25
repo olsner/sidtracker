@@ -1,6 +1,5 @@
 package se.olsner.sidtracker;
 
-
 import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -16,7 +15,7 @@ import android.widget.ToggleButton;
 
 public class SIDTracker extends Activity {
 
-	private static final class AudioPlayerThread implements Runnable {
+	class AudioPlayerThread implements Runnable {
 		private SoundQueue queue;
 		private int sampleRate;
 		
@@ -43,7 +42,7 @@ public class SIDTracker extends Activity {
 		}
 	}
 	
-	private static final class SIDThread implements Runnable {
+	class SIDThread implements Runnable {
 		private SoundQueue queue;
 		private SID sid;
 		
