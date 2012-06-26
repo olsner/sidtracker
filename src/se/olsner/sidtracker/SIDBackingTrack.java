@@ -44,7 +44,9 @@ public class SIDBackingTrack implements Runnable {
 			while (offset < buffer.length)
 			{
 				nextIfNeeded();
-				offset += sid.clock(cycles, buffer, offset, buffer.length - offset);
+				int requested = cycles[0];
+				int samples = sid.clock(cycles, buffer, offset, buffer.length - offset);
+				offset += samples;
 			}
 			postBuffer(buffer);
 		}

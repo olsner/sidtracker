@@ -78,7 +78,7 @@ public class SIDTracker extends Activity {
 	// FIXME This state needs to move out of the Activity since that'll get recreated at various times (rotation, for instance...)
 	private SID sid = new SID();
 	private SoundQueue queue = new SoundQueue();
-	private SIDControl sidControl = new SIDControl(sid, queue);
+	private SIDControl sidControl = new SIDControl(sid, new SoundQueue());
 	
 	public SIDTracker() {
 		initSID();
@@ -145,7 +145,7 @@ public class SIDTracker extends Activity {
 
 	private void initSID() {
 		Log.i("SIDTracker", "SID Initialized: "+sid);
-		sid.write(23, (7 << 4) | 7); // resonancy = 7, enable filter for all channels
+		/*sid.write(23, (7 << 4) | 7); // resonancy = 7, enable filter for all channels
 		sid.write(24, 16 | 15); // enable lowpass filter, volume = 15
 		sid.write(5, 0); // attack/decay
 		sid.write(6, 0xf0); // sustain/release
@@ -154,6 +154,7 @@ public class SIDTracker extends Activity {
 		sid.write(1, 0x1c); // note, high byte
 
 		sid.write(4, 32); // gate/waveform: triangle wave, gate=0
+		*/
 	}
 	
 	@Override

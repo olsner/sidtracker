@@ -91,7 +91,7 @@ public class SID {
 	{
 		int requested = cycles[0];
 		int res = nativeClock(cycles, output, offset, length);
-		cycleCounter += cycles[0] - requested;
+		cycleCounter += requested - cycles[0];
 		return res;
 	}
 

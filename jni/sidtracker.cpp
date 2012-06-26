@@ -105,7 +105,7 @@ REG_JNI(se_olsner_sidtracker_SID, nativeInit, "(II)V");
 void Java_se_olsner_sidtracker_SID_nativeWrite(JNIEnv* env, jobject sid,
 		jint reg, jint value)
 {
-	LOGV("Setting SID register %#x to %#x", reg, value);
+	//LOGV("Setting SID register %#x to %#x", reg, value);
 	GET_SID();
 	sidfp.write(reg, value);
 }
