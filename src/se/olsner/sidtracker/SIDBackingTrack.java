@@ -19,7 +19,7 @@ import java.io.*;
 public class SIDBackingTrack implements Runnable {
 	private SoundQueue queue;
 	private SID sid;
-	//final int user; // bitmask of ignored/user-controlled voices?
+	final int user = 3; // bitmask of ignored/user-controlled voices?
 	final InputStream track;
 
 	int[] cycles = new int[1];
@@ -87,7 +87,10 @@ public class SIDBackingTrack implements Runnable {
 		// now doesn't change, and we will eventually read a non-zero delta
 		while (nextActionTime <= now)
 		{
-			sid.xor(nextActionReg, nextActionXOR);
+			if (channelForReg(nextActionReg) == user)
+				sid.fakeXor(nextActionReg, nextActionXOR);
+			else
+				sid.xor(nextActionReg, nextActionXOR);
 			read();
 		}
 		cycles[0] = (int)(nextActionTime - now);
@@ -101,6 +104,17 @@ public class SIDBackingTrack implements Runnable {
 
 	private void postBuffer(short[] buffer) {
 		queue.postRunningControlMessages(buffer);
+	}
+
+	private int channelForReg(int reg) {
+		if (reg < 21) {
+			return 1 + reg / 7;
+		} else if (reg >= 0x1b) {
+			return 3;
+		} else {
+			// Global register
+			return 0;
+		}
 	}
 
 }
