@@ -78,18 +78,21 @@ public class SIDTracker extends Activity {
 	// FIXME This state needs to move out of the Activity since that'll get recreated at various times (rotation, for instance...)
 	private SID sid = new SID();
 	private SoundQueue queue = new SoundQueue();
-	private SIDControl sidControl = new SIDControl(sid, new SoundQueue());
-	
-	public SIDTracker() {
-		initSID();
-	}
+	private SIDBackingTrack sidBackingTrack;
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
+		//createInteractiveMode();
+		//createFollowMode();
+	}
+
+	/*private void createInteractiveMode() {
+		sidControl = new SIDControl(sid, new SoundQueue());
+		initSID();
+
 		ToggleButton gateToggle = (ToggleButton)findViewById(R.id.toggleGATE);
 		gateToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
@@ -141,6 +144,64 @@ public class SIDTracker extends Activity {
 				}
 			}
 		});
+	}*/
+
+	private void createFollowMode() {
+		final View touchView = findViewById(R.id.touchInputView);
+		touchView.setOnTouchListener(new OnTouchListener() {
+			int lastFilter = -1, lastFreq = -1;
+			boolean lastGate = false;
+			
+			public boolean onTouch(View v, MotionEvent event) {
+				int filterMin = SID.MAX_FILTER_CUTOFF / 3, filterMax = SID.MAX_FILTER_CUTOFF;
+				int freqMin = 100, freqMax = SID.MAX_FREQUENCY;
+				int x = (int)event.getX();
+				// Flip Y to make up = higher
+				int y = v.getHeight() - (int)event.getY();
+				int filter = filterMin + (filterMax - filterMin) * x / v.getWidth();
+				int freq = freqMin + (freqMax - freqMin) * y / v.getHeight();
+				if (lastFilter != filter)
+				{
+					//sidBackingTrack.setFilterCutoff(filter);
+					lastFilter = filter;
+				}
+				if (lastFreq != freq)
+				{
+					//sidBackingTrack.setFrequencyHz(0, freq);
+					lastFreq = freq;
+				}
+				boolean gate = getPointerStateFromAction(event.getActionMasked());
+				if (lastGate != gate) {
+					sidBackingTrack.userSetGate(gate);
+					lastGate = gate;
+				}
+				return true;
+			}
+
+			private boolean getPointerStateFromAction(int actionMasked) {
+				switch (actionMasked)
+				{
+				case MotionEvent.ACTION_DOWN:
+				case MotionEvent.ACTION_MOVE:
+				case MotionEvent.ACTION_POINTER_DOWN:
+					return true;
+				default:
+					return false;
+				}
+			}
+		});
+
+		sidBackingTrack.setListener(new SIDBackingTrack.Listener() {
+			public void onGateChange(final boolean correctGate) {
+				touchView.post(new Runnable() {
+					public void run() {
+						System.out.println("Setting background color to "+correctGate);
+						touchView.setBackgroundColor(correctGate ? 0xffff0000 : 0xff000000);
+						touchView.invalidate();
+					}
+				});
+			}
+		});
 	}
 
 	private void initSID() {
@@ -162,11 +223,14 @@ public class SIDTracker extends Activity {
 		super.onResume();
 		queue.resume();
 		try {
-			new Thread(new SIDBackingTrack(sid, queue, getAssets().open("spellbound.asid"))).start();
+			sidBackingTrack = new SIDBackingTrack(
+				sid, queue, getAssets().open("spellbound.asid"));
+			new Thread(sidBackingTrack).start();
 		} catch (IOException e) {
 			Log.e("SIDTracker", "Failed loading backing track", e);
-			new Thread(new SIDThread(sid, queue)).start();
+			throw new RuntimeException(e);
 		}
+		createFollowMode();
 		new Thread(new AudioPlayerThread(queue, sid.getSampleRate())).start();
 	}
 	

@@ -17,15 +17,30 @@ import android.widget.ToggleButton;
 import java.io.*;
 
 public class SIDBackingTrack implements Runnable {
+
+	interface Listener {
+		public void onGateChange(boolean gate);
+	}
+
 	private SoundQueue queue;
 	private SID sid;
-	final int user = 3; // bitmask of ignored/user-controlled voices?
+	final int user = 1; // bitmask of ignored/user-controlled voices?
+	final int userGateReg = (user - 1) * 7 + 4;
 	final InputStream track;
+
+	Listener listener;
 
 	int[] cycles = new int[1];
 	long nextActionTime;
 	int nextActionReg;
 	int nextActionXOR;
+
+	// Gate for user channel as determined by song
+	boolean correctGate;
+	// Gate currently set in sid register
+	boolean currentGate;
+	// Gate as set by user by touching
+	volatile boolean userGate;
 
 	public SIDBackingTrack(SID sid, SoundQueue queue, InputStream track)
 	{
@@ -44,9 +59,13 @@ public class SIDBackingTrack implements Runnable {
 			while (offset < buffer.length)
 			{
 				nextIfNeeded();
+				checkGate();
 				int requested = cycles[0];
+				//Log.i("SIDTracker", "Clocking for "+requested+" cycles");
 				int samples = sid.clock(cycles, buffer, offset, buffer.length - offset);
 				offset += samples;
+				//Log.i("SIDTracker", "Made "+samples+" samples for "+(requested - cycles[0])+" cycles ("+requested+" cycles requested");
+				//Log.i("SIDTracker", "Filled "+offset+" of "+buffer.length+" samples");
 			}
 			postBuffer(buffer);
 		}
@@ -87,10 +106,23 @@ public class SIDBackingTrack implements Runnable {
 		// now doesn't change, and we will eventually read a non-zero delta
 		while (nextActionTime <= now)
 		{
-			if (channelForReg(nextActionReg) == user)
+			/*if (channelForReg(nextActionReg) == user) {
 				sid.fakeXor(nextActionReg, nextActionXOR);
-			else
+			} else {
 				sid.xor(nextActionReg, nextActionXOR);
+			}*/
+			if (nextActionReg == userGateReg) {
+				boolean gate = (nextActionXOR & 1) == (correctGate ? 0 : 1);
+				if (gate != correctGate)
+				{
+					correctGate = gate;
+					Log.i("SIDTracker", "Correct gate is now "+gate);
+					if (listener != null)
+						listener.onGateChange(gate);
+				}
+				nextActionXOR &= 0xfe;
+			}
+			sid.xor(nextActionReg, nextActionXOR);
 			read();
 		}
 		cycles[0] = (int)(nextActionTime - now);
@@ -117,4 +149,32 @@ public class SIDBackingTrack implements Runnable {
 		}
 	}
 
+	public void userSetGate(boolean gate) {
+		userGate = gate;
+	}
+
+	private void checkGate() {
+		//Log.i("SIDTracker", "checkGate: user "+userGate+" correct "+correctGate+" current "+currentGate);
+		// Always ungate at correct time, otherwise gate when both user and
+		// the song are gated.
+		if (!correctGate || userGate) {
+			setGate(correctGate);
+		}
+		//setGate(userGate);
+	}
+
+	public boolean getCorrectGate() {
+		return correctGate;
+	}
+
+	private void setGate(boolean gate) {
+		if (gate == currentGate) return;
+
+		sid.xor(userGateReg, 1);
+		currentGate = gate;
+	}
+
+	public void setListener(Listener listener) {
+		this.listener = listener;
+	}
 }
