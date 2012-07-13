@@ -16,6 +16,8 @@ import android.widget.ToggleButton;
 
 import java.io.*;
 
+import org.tukaani.xz.XZInputStream;
+
 public class SIDTracker extends Activity {
 
 	class AudioPlayerThread implements Runnable {
@@ -224,7 +226,8 @@ public class SIDTracker extends Activity {
 		queue.resume();
 		try {
 			sidBackingTrack = new SIDBackingTrack(
-				sid, queue, getAssets().open("spellbound.asid"));
+				sid, queue,
+				new XZInputStream(getAssets().open("spellbound.asid.xz")));
 			new Thread(sidBackingTrack).start();
 		} catch (IOException e) {
 			Log.e("SIDTracker", "Failed loading backing track", e);
