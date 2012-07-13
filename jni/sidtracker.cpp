@@ -43,18 +43,6 @@ struct JNINativeClass
 extern JNINativeClass __start_JNI_classes[1];
 extern JNINativeClass __stop_JNI_classes[1];
 
-void Java_se_olsner_sidtracker_NativeTest_testFunc(JNIEnv* env, jclass apidemos, jint i, jboolean z)
-{
-	LOGI("testFunc called! %d %s", i, z ? "true" : "false");
-}
-REG_JNI(se_olsner_sidtracker_NativeTest, testFunc, "(IZ)V");
-void Java_se_olsner_sidtracker_NativeTest_testFunc_ii(JNIEnv* env, jclass apidemos, jint i, jint j)
-{
-	LOGI("testFunc(int,int) called! %d %d", i, j);
-}
-REG_JNI_(se_olsner_sidtracker_NativeTest, testFunc, testFunc_ii, "(II)V");
-REG_CLASS("se/olsner/sidtracker/NativeTest", se_olsner_sidtracker_NativeTest);
-
 template<typename T>
 static T primArrayGet(JNIEnv* env, jarray array, jint index)
 {
