@@ -39,27 +39,34 @@
          application and should be checked into Version Control Systems. -->
     <loadproperties srcFile="project.properties" />
 
-    <!-- quick check on sdk.dir -->
+    <!-- quick check on sdk.dir and ndk.dir -->
     <fail
             message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through an env var"
             unless="sdk.dir"
     />
 
+    <fail
+            message="ndk.dir is missing. Add it to local.properties."
+            unless="ndk.dir"
+    />
 
-<!-- extension targets. Uncomment the ones where you want to do custom work
-     in between standard targets -->
-<!--
     <target name="-pre-build">
-    </target>
-    <target name="-pre-compile">
+        <condition property="ndk.debug" value="1" else="0">
+          <equals arg1="${build.target}" arg2="debug" />
+        </condition>
+        <exec executable="${ndk.dir}/ndk-build" failonerror="true">
+          <arg value="APP_OPTIM=${build.target}"/>
+          <arg value="NDK_DEBUG=${ndk.debug}"/>
+        </exec>
     </target>
 
-    /* This is typically used for code obfuscation.
-       Compiled code location: ${out.classes.absolute.dir}
-       If this is not done in place, override ${out.dex.input.absolute.dir} */
-    <target name="-post-compile">
+    <target name="-pre-clean">
+      <!-- ndk-build clean will only clean one target, but let's violently
+           delete both release and debug builds at once. (There are no separate
+           ant targets for release/debug clean anyway.) -->
+      <delete dir="obj"/>
+      <delete dir="libs"/>
     </target>
--->
 
     <!-- Import the actual build file.
 
@@ -79,7 +86,7 @@
          In all cases you must update the value of version-tag below to read 'custom' instead of an integer,
          in order to avoid having your file be overridden by tools such as "android update project"
     -->
-    <!-- version-tag: 1 -->
+    <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
 </project>
