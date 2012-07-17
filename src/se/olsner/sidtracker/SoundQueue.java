@@ -1,5 +1,7 @@
 package se.olsner.sidtracker;
 
+import android.util.Log;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -44,9 +46,9 @@ public class SoundQueue
 
 	public void postControlMessage(Runnable controlMessage) {
 		try {
-			System.err.println("Offering control message...");
+			Log.d("SoundQueue", "Offering control message...");
 			controlQueue.offer(controlMessage, 1000, TimeUnit.SECONDS);
-			System.err.println("Control message offered");
+			Log.d("SoundQueue", "Control message offered");
 		} catch (InterruptedException e) {
 			assert false : e;
 		}
@@ -66,7 +68,7 @@ public class SoundQueue
 			}
 			Runnable control;
 			while ((control = pollControlMessage()) != null) {
-				System.out.println("Running control message "+control);
+				Log.d("SoundQueue", "Running control message "+control);
 				control.run();
 				control = null;
 			}

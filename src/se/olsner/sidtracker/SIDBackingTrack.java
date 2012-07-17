@@ -70,7 +70,7 @@ public class SIDBackingTrack implements Runnable {
 			postBuffer(buffer);
 		}
 		
-		System.out.println("SID thread done!");
+		Log.d("SIDBackingTrack", "SID thread done!");
 	}
 
 	private static int readByte(InputStream in) {
@@ -116,7 +116,7 @@ public class SIDBackingTrack implements Runnable {
 				if (gate != correctGate)
 				{
 					correctGate = gate;
-					Log.i("SIDTracker", "Correct gate is now "+gate);
+					Log.d("SIDTracker", "Correct gate is now "+gate);
 					if (listener != null)
 						listener.onGateChange(gate);
 				}

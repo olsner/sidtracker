@@ -1,5 +1,7 @@
 package se.olsner.sidtracker;
 
+import android.util.Log;
+
 public class SIDControl {
 
 	private static final int PER_VOICE_REGS = 7;
@@ -18,7 +20,7 @@ public class SIDControl {
 	}
 
 	public void setGate(int voice, boolean gate) {
-		System.err.println("Trying to gate voice "+voice+" to "+gate);
+		Log.d("SIDControl", "Trying to gate voice "+voice+" to "+gate);
 		queue.postControlMessage(sid.new ChangeRegisterMessage(voice*PER_VOICE_REGS + GATE_OFFSET, 0xfe, gate ? 1 : 0));
 	}
 

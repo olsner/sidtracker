@@ -33,7 +33,7 @@ public class SIDTracker extends Activity {
 		public void run() {
 			AudioTrack output = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate / 2, AudioTrack.MODE_STREAM);
 			output.play();
-			System.err.println("output state is "+output.getState()+", play state is "+output.getPlayState());
+			Log.d("AudioPlayerThread", "output state is "+output.getState()+", play state is "+output.getPlayState());
 			
 			while (queue.isLive())
 			{
@@ -44,7 +44,7 @@ public class SIDTracker extends Activity {
 			
 			output.stop();
 			output.release();
-			System.out.println("Audio thread done!");
+			Log.d("AudioPlayerThread", "Audio thread done!");
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class SIDTracker extends Activity {
 				postBuffer(buffer);
 			}
 			
-			System.out.println("SID thread done!");
+			Log.d("SIDThread", "SID thread done!");
 		}
 
 		private void postBuffer(short[] buffer) {
@@ -198,7 +198,7 @@ public class SIDTracker extends Activity {
 			public void onGateChange(final boolean correctGate) {
 				touchView.post(new Runnable() {
 					public void run() {
-						System.out.println("Setting background color to "+correctGate);
+						Log.d("TouchView", "Setting background color to "+correctGate);
 						touchView.setBackgroundColor(correctGate ? 0xffff0000 : 0xff000000);
 						touchView.invalidate();
 					}
