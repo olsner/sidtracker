@@ -65,11 +65,6 @@ public class SID {
 		nativeWrite(reg, value);
 	}
 
-	public void fakeXor(int reg, int value)
-	{
-		registerValues[reg] ^= value;
-	}
-
 	public void xor(int reg, int value)
 	{
 		write(reg, read(reg) ^ value);

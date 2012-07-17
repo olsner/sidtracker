@@ -224,6 +224,10 @@ public class SIDTracker extends Activity {
 	InputStream openAsset(String path) throws IOException {
 		return new LZMA2InputStream(getAssets().open(path), 1 << 20);
 	}
+
+	Track openTrack(String name) throws IOException {
+		return new InputStreamTrack(openAsset(name+".lzma2"));
+	}
 	
 	@Override
 	protected void onResume() {
@@ -231,7 +235,7 @@ public class SIDTracker extends Activity {
 		queue.resume();
 		try {
 			sidBackingTrack = new SIDBackingTrack(
-				sid, queue, openAsset("spellbound.lzma2"));
+				sid, queue, openTrack("spellbound"));
 			new Thread(sidBackingTrack).start();
 		} catch (IOException e) {
 			Log.e("SIDTracker", "Failed loading backing track", e);

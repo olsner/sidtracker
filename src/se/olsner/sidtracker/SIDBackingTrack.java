@@ -26,14 +26,11 @@ public class SIDBackingTrack implements Runnable {
 	private SID sid;
 	final int user = 1; // bitmask of ignored/user-controlled voices?
 	final int userGateReg = (user - 1) * 7 + 4;
-	final InputStream track;
+	final Track track;
 
 	Listener listener;
 
 	int[] cycles = new int[1];
-	long nextActionTime;
-	int nextActionReg;
-	int nextActionXOR;
 
 	// Gate for user channel as determined by song
 	boolean correctGate;
@@ -42,7 +39,7 @@ public class SIDBackingTrack implements Runnable {
 	// Gate as set by user by touching
 	volatile boolean userGate;
 
-	public SIDBackingTrack(SID sid, SoundQueue queue, InputStream track)
+	public SIDBackingTrack(SID sid, SoundQueue queue, Track track)
 	{
 		this.queue = queue;
 		this.sid = sid;
@@ -73,28 +70,6 @@ public class SIDBackingTrack implements Runnable {
 		Log.d("SIDBackingTrack", "SID thread done!");
 	}
 
-	private static int readByte(InputStream in) {
-		try {
-			return in.read();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static int readInt16(InputStream in) {
-		return (readByte(in) << 8) | readByte(in);
-	}
-
-	private static long readInt(InputStream in) {
-		int i = readByte(in);
-		switch (i)
-		{
-		case 0xff: return ((long)readInt16(in) << 16) | readInt16(in);
-		case 0xfe: return readInt16(in);
-		default: return i;
-		}
-	}
-
 	private void nextIfNeeded() {
 		if (cycles[0] == 0) {
 			next();
@@ -103,16 +78,14 @@ public class SIDBackingTrack implements Runnable {
 
 	private void next() {
 		long now = sid.getCycleCount();
+
 		// now doesn't change, and we will eventually read a non-zero delta
-		while (nextActionTime <= now)
+		while (track.nextTime() <= now)
 		{
-			/*if (channelForReg(nextActionReg) == user) {
-				sid.fakeXor(nextActionReg, nextActionXOR);
-			} else {
-				sid.xor(nextActionReg, nextActionXOR);
-			}*/
-			if (nextActionReg == userGateReg) {
-				boolean gate = (nextActionXOR & 1) == (correctGate ? 0 : 1);
+			int reg = track.nextReg();
+			int xor = track.nextXor();
+			if (reg == userGateReg) {
+				boolean gate = (xor & 1) == (correctGate ? 0 : 1);
 				if (gate != correctGate)
 				{
 					correctGate = gate;
@@ -120,18 +93,25 @@ public class SIDBackingTrack implements Runnable {
 					if (listener != null)
 						listener.onGateChange(gate);
 				}
-				nextActionXOR &= 0xfe;
+				xor &= 0xfe;
 			}
-			sid.xor(nextActionReg, nextActionXOR);
+			sid.xor(reg, xor);
+
+			// FIXME Handle reaching the end of the track:
+			// 1. Check track.available, choose a suitable number of cycles
+			// to keep clocking (1/100th of a second?)
+			// 2. Signal the listener that we've reached the end of the song.
 			read();
 		}
-		cycles[0] = (int)(nextActionTime - now);
+		cycles[0] = (int)(track.nextTime() - now);
 	}
 
 	private void read() {
-		nextActionTime += readInt(track);
-		nextActionReg = readByte(track);
-		nextActionXOR = readByte(track);
+		try {
+			track.read();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void postBuffer(short[] buffer) {
@@ -153,6 +133,10 @@ public class SIDBackingTrack implements Runnable {
 		userGate = gate;
 	}
 
+	public boolean getCorrectGate() {
+		return correctGate;
+	}
+
 	private void checkGate() {
 		//Log.i("SIDTracker", "checkGate: user "+userGate+" correct "+correctGate+" current "+currentGate);
 		// Always ungate at correct time, otherwise gate when both user and
@@ -161,10 +145,6 @@ public class SIDBackingTrack implements Runnable {
 			setGate(correctGate);
 		}
 		//setGate(userGate);
-	}
-
-	public boolean getCorrectGate() {
-		return correctGate;
 	}
 
 	private void setGate(boolean gate) {
