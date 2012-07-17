@@ -93,7 +93,7 @@ public class SeekableXZInputStream extends SeekableInputStream {
     /**
      * List of IndexDecoders, one for each Stream in the file.
      */
-    private final ArrayList streams = new ArrayList();
+    private final ArrayList<IndexDecoder> streams = new ArrayList<IndexDecoder>();
 
     /**
      * IndexDecoder from which the current Block is being decoded.
@@ -608,7 +608,7 @@ public class SeekableXZInputStream extends SeekableInputStream {
         long compressedSum = 0;
 
         while (true) {
-            index = (IndexDecoder)streams.get(--i);
+            index = streams.get(--i);
             if (uncompressedSum + index.getUncompressedSize() > seekPos)
                 break;
 

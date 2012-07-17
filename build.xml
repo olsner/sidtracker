@@ -50,6 +50,8 @@
             unless="ndk.dir"
     />
 
+    <property name="java.compilerargs" value="-Xlint" />
+
     <target name="-pre-build">
         <condition property="ndk.debug" value="1" else="0">
           <equals arg1="${build.target}" arg2="debug" />
