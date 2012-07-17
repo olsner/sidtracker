@@ -40,7 +40,11 @@ public class SID {
 			return "SID.ChangeRegisterMessage("+reg+" &= "+and+" ^= "+xor+")";
 		}
 	}
-	
+
+	static {
+		System.loadLibrary("sidtracker");
+	}
+
 	private long nativeData;
 	private byte[] registerValues = new byte[32];
 	private long cycleCounter;

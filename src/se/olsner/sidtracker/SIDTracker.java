@@ -48,10 +48,6 @@ public class SIDTracker extends Activity {
 		}
 	}
 	
-	static {
-		System.loadLibrary("sidtracker");
-	}
-
 	// FIXME This state needs to move out of the Activity since that'll get recreated at various times (rotation, for instance...)
 	private SID sid = new SID();
 	private SoundQueue queue = new SoundQueue();
