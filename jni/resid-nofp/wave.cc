@@ -24,19 +24,8 @@
 
 namespace reSID
 {
-
-static void init_wavedata_zerorun(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
-{
-	const unsigned char* end = initdata + initdata_len;
-	while (initdata < end)
-	{
-		dest += *initdata++;
-		*dest = (*initdata++) << 4;
-	}
-}
 static void init_wavedata_rle(unsigned short* dest, const unsigned char* initdata, size_t initdata_len)
 {
-	unsigned short* destEnd = dest + 4096;
 	const unsigned char* end = initdata + initdata_len;
 	while (initdata < end)
 	{
