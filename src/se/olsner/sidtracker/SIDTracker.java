@@ -17,6 +17,7 @@ import android.widget.ToggleButton;
 import java.io.*;
 
 import org.tukaani.xz.XZInputStream;
+import org.tukaani.xz.LZMA2InputStream;
 
 public class SIDTracker extends Activity {
 
@@ -219,6 +220,10 @@ public class SIDTracker extends Activity {
 		sid.write(4, 32); // gate/waveform: triangle wave, gate=0
 		*/
 	}
+
+	InputStream openAsset(String path) throws IOException {
+		return new LZMA2InputStream(getAssets().open(path), 1 << 20);
+	}
 	
 	@Override
 	protected void onResume() {
@@ -226,8 +231,7 @@ public class SIDTracker extends Activity {
 		queue.resume();
 		try {
 			sidBackingTrack = new SIDBackingTrack(
-				sid, queue,
-				new XZInputStream(getAssets().open("spellbound.asid.xz")));
+				sid, queue, openAsset("spellbound.lzma2"));
 			new Thread(sidBackingTrack).start();
 		} catch (IOException e) {
 			Log.e("SIDTracker", "Failed loading backing track", e);
