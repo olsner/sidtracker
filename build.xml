@@ -62,12 +62,35 @@
         </exec>
     </target>
 
+    <target name="-pre-compile">
+        <!-- merge the project's own classpath and the tested project's classpath -->
+        <path id="project.javac.classpath">
+            <path refid="project.all.jars.path" />
+            <path refid="tested.project.classpath" />
+            <fileset dir="compile-libs" includes="*.jar"/>
+        </path>
+        <javac encoding="${java.encoding}"
+                source="${java.source}" target="${java.target}"
+                debug="true" extdirs="" includeantruntime="false"
+                destdir="${out.classes.absolute.dir}"
+                bootclasspathref="project.target.class.path"
+                verbose="${verbose}"
+                classpathref="project.javac.classpath"
+                fork="${need.javac.fork}">
+            <src path="${source.absolute.dir}" />
+            <src path="${gen.absolute.dir}" />
+            <compilerarg line="${java.compilerargs}" />
+        </javac>
+    </target>
+
     <target name="-pre-clean">
       <!-- ndk-build clean will only clean one target, but let's violently
            delete both release and debug builds at once. (There are no separate
            ant targets for release/debug clean anyway.) -->
       <delete dir="obj"/>
-      <delete dir="libs"/>
+      <delete dir="libs/x86"/>
+      <delete dir="libs/armeabi"/>
+      <delete dir="libs/armeabi-v7a"/>
     </target>
 
     <!-- Import the actual build file.

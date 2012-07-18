@@ -12,6 +12,9 @@ import android.widget.*;
 
 import java.io.*;
 
+import com.googlecode.androidannotations.annotations.*;
+
+@EActivity(R.layout.main_menu)
 public class MainMenu extends Activity {
 
     Typeface font;
@@ -19,38 +22,33 @@ public class MainMenu extends Activity {
     public MainMenu() {
     }
 
-    private static void reportProgress(final ProgressBar bar, final int progress) {
-        bar.post(new Runnable() { public void run() {
-            bar.setProgress(progress);
-        }});
-    }
-    private void reportInitializationDone(final View view) {
-        view.post(new Runnable() { public void run() {
-            view.setVisibility(View.GONE);
-            TextView play = (TextView)findViewById(R.id.play);
-            play.setTextColor(getResources().getColor(R.color.enabled));
-            play.setEnabled(true);
-            Log.i("MainMenu", "Initialization done, Play enabled!");
-        }});
+    @UiThread
+    void initializationDone() {
+        View view = findViewById(R.id.loading_layout);
+        view.setVisibility(View.GONE);
+
+        TextView play = (TextView)findViewById(R.id.play);
+        play.setTextColor(getResources().getColor(R.color.enabled));
+        play.setEnabled(true);
+        Log.i("MainMenu", "Initialization done, Play enabled!");
     }
 
-    private void initSID() {
-        final View progressView = findViewById(R.id.loading_layout);
+    @AfterViews
+    void initSID() {
         if (SID.isInitialized()) {
             Log.i("SID", "SID init already done, hiding progress.");
-            reportInitializationDone(progressView);
-            return;
+            initializationDone();
+        } else {
+            backgroundInitSID();
         }
+    }
 
-        final ProgressBar progress = (ProgressBar)findViewById(R.id.loading_progressbar);
-        new Thread(new Runnable() { public void run() {
-            Log.i("SID", "Initializing SID");
-            reportProgress(progress, 1);
-            new SID();
-            reportProgress(progress, 100);
-            reportInitializationDone(progressView);
-            Log.i("SID", "SID init done");
-        }} ).start();
+    @Background
+    void backgroundInitSID() {
+        Log.i("SID", "Initializing SID");
+        new SID();
+        initializationDone();
+        Log.i("SID", "SID init done");
     }
 
     private void setC64Font(int id) {
@@ -60,16 +58,17 @@ public class MainMenu extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
-        setContentView(R.layout.main_menu);
-
+    @AfterViews
+    void setFonts() {
         font = Typeface.createFromAsset(getAssets(), "C64_User_Mono_v1.0-STYLE.ttf");
         setC64Font(R.id.play);
         setC64Font(R.id.exit);
         setC64Font(R.id.loading_text);
-        initSID();
     }
 
+    @Click(R.id.play)
     public void onPlayClicked(View v) {
         Log.i("MainMenu", "Play clicked, kicking off the stuff!");
         startActivity(new Intent(this, SIDTracker.class));

@@ -11,8 +11,7 @@
         style="@style/MainMenuItem.Disabled"
         android:layout_marginTop="20dp"
         android:text="@string/play"
-        android:enabled="false"
-        android:onClick="onPlayClicked"/>
+        android:enabled="false"/>
 
     <!-- Exit shouldn't really be here... Just added it because a menu needs
          items :) -->
