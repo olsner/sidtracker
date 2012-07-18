@@ -124,7 +124,9 @@ public class SIDTracker extends Activity {
 	}
 
 	Track openTrack(String name) throws IOException {
-		return new InputStreamTrack(openAsset(name+".lzma2"));
+		return new BufferedTrack(
+			new InputStreamTrack(openAsset(name+".lzma2")),
+			16);
 	}
 	
 	@Override
