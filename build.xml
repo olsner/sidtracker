@@ -52,6 +52,8 @@
 
     <property name="java.compilerargs" value="-Xlint" />
 
+    <property name="ndk.verbose" value="0" />
+
     <target name="-pre-build">
         <condition property="ndk.debug" value="1" else="0">
           <equals arg1="${build.target}" arg2="debug" />
@@ -59,6 +61,7 @@
         <exec executable="${ndk.dir}/ndk-build" failonerror="true">
           <arg value="APP_OPTIM=${build.target}"/>
           <arg value="NDK_DEBUG=${ndk.debug}"/>
+          <arg value="V=${ndk.verbose}"/>
         </exec>
     </target>
 
