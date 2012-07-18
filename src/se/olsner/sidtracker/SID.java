@@ -45,12 +45,22 @@ public class SID {
 		System.loadLibrary("sidtracker");
 	}
 
+	private static boolean initialized;
+
 	private long nativeData;
 	private byte[] registerValues = new byte[32];
 	private long cycleCounter;
 
 	public SID() {
 		nativeInit(CYCLES_PER_SECOND, SAMPLE_RATE);
+		// The first call to nativeInit will take a long time, remember if
+		// we ever did it so we know whether to start progress bar and
+		// Loading... display.
+		initialized = true;
+	}
+
+	public static boolean isInitialized() {
+		return initialized;
 	}
 
 	private native void nativeInit(int cyclesPerSecond, int sampleRate);

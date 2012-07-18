@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MainMenuItem">
+        <item name="android:textSize">20sp</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+        <item name="android:textColor">@color/enabled</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:linksClickable">false</item>
+        <item name="android:background">@null</item>
+    </style>
+    <style name="MainMenuItem.Disabled">
+        <item name="android:textColor">@color/disabled</item>
+    </style>
+    <style name="MainMenuItem.Loading">
+    </style>
+    <color name="disabled">#999</color>
+    <color name="enabled">#fff</color>
+</resources>

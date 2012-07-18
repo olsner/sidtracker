@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, ApiDemos!</string>
-    <string name="app_name">SID Tracker</string>
-    <string name="saw_wave_enable">SAW</string>
-    <string name="gate">GATE</string>
+    <string name="app_name">SID-a-long</string>
+    <string name="play">Play</string>
+    <string name="exit">Exit</string>
+    <string name="loading">Loading...</string>
 </resources>

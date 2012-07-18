@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/play"
+        style="@style/MainMenuItem.Disabled"
+        android:layout_marginTop="20dp"
+        android:text="@string/play"
+        android:enabled="false"
+        android:onClick="onPlayClicked"/>
+
+    <!-- Exit shouldn't really be here... Just added it because a menu needs
+         items :) -->
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/exit"
+        android:layout_marginTop="20dp"
+        style="@style/MainMenuItem"
+        android:text="@string/exit"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/loading_layout">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/loading_progressbar"
+            style="@android:style/Widget.ProgressBar.Large"
+            android:indeterminate="true"
+            android:layout_marginRight="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/MainMenuItem.Loading"
+            android:id="@+id/loading_text"
+            android:text="@string/loading" />
+
+    </LinearLayout>
+
+</LinearLayout>

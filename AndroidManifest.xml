@@ -6,7 +6,7 @@
 
 
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:vmSafeMode="true">
-        <activity android:name="SIDTracker"
+        <activity android:name="MainMenu"
                   android:launchMode="singleTask"
                   android:alwaysRetainTaskState="true"
                   android:label="@string/app_name">
@@ -15,6 +15,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="SIDTracker" />
 
     </application>
 </manifest>
