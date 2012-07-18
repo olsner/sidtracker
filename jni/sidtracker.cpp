@@ -5,6 +5,8 @@
 #include <assert.h>
 
 // TODO Enable FP on Atom. cpuid asm bails out due to clobbering PIC register
+// Note: Using the floating-point code on ARMv6 even if it has VFP is not
+// useful, it'll be too slow (is on ZTE Blade anyway).
 #if __ARM_ARCH_7A__
 #define USE_RESID_FP 1
 #endif

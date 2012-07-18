@@ -7,6 +7,10 @@ LOCAL_MODULE    := sidtracker
 ### Add all source file names to be included in lib separated by a whitespace
 LOCAL_SRC_FILES := sidtracker.cpp
 LOCAL_CFLAGS := -fvisibility=hidden -fvisibility-inlines-hidden -Wall
+# Test code to evaluate use of VFP on ARMv6
+#ifeq ($(TARGET_ARCH_ABI),armeabi)
+#LOCAL_CFLAGS += -march=armv6 -mfloat-abi=softfp -mfpu=vfp
+#endif
 LOCAL_LDLIBS := -llog
 LOCAL_LDLIBS += -Wl,--version-script,$(MY_JNI_DIR)/version-script.txt
 # LOCAL_LDLIBS += -Wl,-Map,linker.map
