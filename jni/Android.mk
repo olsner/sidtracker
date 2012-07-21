@@ -10,8 +10,13 @@ LOCAL_CFLAGS := -fvisibility=hidden -fvisibility-inlines-hidden -Wall
 # The unwind tables take about 8kB on ARM, 4kB on x86. That's almost 50% of
 # the armv7 library.
 LOCAL_CFLAGS += -fno-unwind-tables
+LOCAL_CFLAGS += -finline-small-functions -findirect-inlining -fmerge-all-constants -fmodulo-sched -fmodulo-sched-allow-regmoves -fgcse-sm -fgcse-las -fgcse-after-reload -funsafe-loop-optimizations -Wunsafe-loop-optimizations
+# Since we don't need linker-based dead-code removal, this reduces size
+# (-fwhole-program allows the compiler to do that instead)
+LOCAL_CFLAGS += -fno-data-sections -fno-function-sections
 # whole program: saves 3k on armv7, 15k on x86/armeabi
 LOCAL_CFLAGS += -fwhole-program
+LOCAL_CFLAGS += -ffast-math -fassociative-math -fno-signed-zeros -fno-trapping-math
 # Test code to evaluate use of VFP on ARMv6
 #ifeq ($(TARGET_ARCH_ABI),armeabi)
 #LOCAL_CFLAGS += -march=armv6 -mfloat-abi=softfp -mfpu=vfp
