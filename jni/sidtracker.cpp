@@ -4,6 +4,19 @@
 #include <android/log.h>
 #include <assert.h>
 
+#define REALLY_LOG_(prio, fmt, ...) __android_log_print(ANDROID_LOG_##prio, "SIDTracker", fmt, ##__VA_ARGS__)
+#define NOOP(...) do{}while(0)
+#ifdef NDEBUG
+#define LOG_ NOOP
+#else
+#define LOG_ REALLY_LOG_
+#endif
+
+#define LOGE(fmt, ...) REALLY_LOG_(ERROR, fmt, ## __VA_ARGS__)
+#define LOGI(fmt, ...) LOG_(INFO, fmt, ## __VA_ARGS__)
+#define LOGV(fmt, ...) LOG_(VERBOSE, fmt, ## __VA_ARGS__)
+#define LOGD(fmt, ...) LOG_(DEBUG, fmt, ## __VA_ARGS__)
+
 // TODO Enable FP on Atom. cpuid asm bails out due to clobbering PIC register
 // Note: Using the floating-point code on ARMv6 even if it has VFP is not
 // useful, it'll be too slow (is on ZTE Blade anyway).
@@ -20,11 +33,6 @@ static const sampling_method SAMPLING_METHOD = SAMPLE_INTERPOLATE;
 using namespace reSID;
 static const sampling_method SAMPLING_METHOD = SAMPLE_FAST;
 #endif
-
-#define LOG_(prio, fmt, ...) __android_log_print(ANDROID_LOG_##prio, "SIDTracker", fmt, ##__VA_ARGS__)
-#define LOGV(fmt, ...) LOG_(VERBOSE, fmt, ## __VA_ARGS__)
-#define LOGE(fmt, ...) LOG_(ERROR, fmt, ## __VA_ARGS__)
-#define LOGI(fmt, ...) LOG_(INFO, fmt, ## __VA_ARGS__)
 
 struct JNINativeClass
 {
