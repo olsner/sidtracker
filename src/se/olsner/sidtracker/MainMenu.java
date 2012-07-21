@@ -71,6 +71,6 @@ public class MainMenu extends Activity {
     @Click(R.id.play)
     public void onPlayClicked(View v) {
         Log.i("MainMenu", "Play clicked, kicking off the stuff!");
-        startActivity(new Intent(this, SIDTracker.class));
+        startActivity(new Intent(this, SIDTracker_.class));
     }
 }

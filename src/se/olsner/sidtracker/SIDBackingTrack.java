@@ -66,7 +66,7 @@ public class SIDBackingTrack implements Runnable {
 			}
 			postBuffer(buffer);
 		}
-		
+
 		Log.d("SIDBackingTrack", "SID thread done!");
 	}
 
@@ -119,14 +119,7 @@ public class SIDBackingTrack implements Runnable {
 	}
 
 	private int channelForReg(int reg) {
-		if (reg < 21) {
-			return 1 + reg / 7;
-		} else if (reg >= 0x1b) {
-			return 3;
-		} else {
-			// Global register
-			return 0;
-		}
+		return SID.channelForReg(reg);
 	}
 
 	public void userSetGate(boolean gate) {
@@ -135,6 +128,14 @@ public class SIDBackingTrack implements Runnable {
 
 	public boolean getCorrectGate() {
 		return correctGate;
+	}
+
+	public long getCycleCount() {
+		return sid.getCycleCount();
+	}
+
+	public int getUserChannel() {
+		return user;
 	}
 
 	private void checkGate() {

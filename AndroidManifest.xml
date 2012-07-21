@@ -16,7 +16,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="SIDTracker" />
+        <activity android:name="SIDTracker_" />
 
     </application>
 </manifest>

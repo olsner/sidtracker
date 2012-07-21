@@ -19,6 +19,9 @@ import java.io.*;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.LZMA2InputStream;
 
+import com.googlecode.androidannotations.annotations.*;
+
+@EActivity(R.layout.sidtracker)
 public class SIDTracker extends Activity {
 
 	class AudioPlayerThread implements Runnable {
@@ -49,100 +52,45 @@ public class SIDTracker extends Activity {
 	}
 	
 	// FIXME This state needs to move out of the Activity since that'll get recreated at various times (rotation, for instance...)
-	private SID sid = new SID();
 	private SoundQueue queue = new SoundQueue();
-	private SIDBackingTrack sidBackingTrack;
+
+	@ViewById
+	TrackView trackView;
 	
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-		//createFollowMode();
-	}
-
-	private void createFollowMode() {
-		final View touchView = findViewById(R.id.touchInputView);
-		touchView.setOnTouchListener(new OnTouchListener() {
-			int lastFilter = -1, lastFreq = -1;
-			boolean lastGate = false;
-			
-			public boolean onTouch(View v, MotionEvent event) {
-				int filterMin = SID.MAX_FILTER_CUTOFF / 3, filterMax = SID.MAX_FILTER_CUTOFF;
-				int freqMin = 100, freqMax = SID.MAX_FREQUENCY;
-				int x = (int)event.getX();
-				// Flip Y to make up = higher
-				int y = v.getHeight() - (int)event.getY();
-				int filter = filterMin + (filterMax - filterMin) * x / v.getWidth();
-				int freq = freqMin + (freqMax - freqMin) * y / v.getHeight();
-				if (lastFilter != filter)
-				{
-					//sidBackingTrack.setFilterCutoff(filter);
-					lastFilter = filter;
-				}
-				if (lastFreq != freq)
-				{
-					//sidBackingTrack.setFrequencyHz(0, freq);
-					lastFreq = freq;
-				}
-				boolean gate = getPointerStateFromAction(event.getActionMasked());
-				if (lastGate != gate) {
-					sidBackingTrack.userSetGate(gate);
-					lastGate = gate;
-				}
-				return true;
-			}
-
-			private boolean getPointerStateFromAction(int actionMasked) {
-				switch (actionMasked)
-				{
-				case MotionEvent.ACTION_DOWN:
-				case MotionEvent.ACTION_MOVE:
-				case MotionEvent.ACTION_POINTER_DOWN:
-					return true;
-				default:
-					return false;
-				}
-			}
-		});
-
-		sidBackingTrack.setListener(new SIDBackingTrack.Listener() {
-			public void onGateChange(final boolean correctGate) {
-				touchView.post(new Runnable() {
-					public void run() {
-						Log.d("TouchView", "Setting background color to "+correctGate);
-						touchView.setBackgroundColor(correctGate ? 0xffff0000 : 0xff000000);
-						touchView.invalidate();
-					}
-				});
-			}
-		});
-	}
-
 	InputStream openAsset(String path) throws IOException {
 		return new LZMA2InputStream(getAssets().open(path), 1 << 20);
 	}
 
-	Track openTrack(String name) throws IOException {
+	BufferedTrack openTrack(String name) throws IOException {
 		return new BufferedTrack(
 			new InputStreamTrack(openAsset(name+".lzma2")),
 			16);
 	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		queue.resume();
+
+	//@AfterViews
+	void startThreads() {
+		SID sid = new SID();
+		Log.d("SIDTracker", "Starting threads...");
+
 		try {
-			sidBackingTrack = new SIDBackingTrack(
-				sid, queue, openTrack("spellbound"));
+			BufferedTrack track = openTrack("spellbound");
+			SIDBackingTrack sidBackingTrack =
+				new SIDBackingTrack(sid, queue, track);
 			new Thread(sidBackingTrack).start();
+
+			trackView.init(track, sidBackingTrack);
 		} catch (IOException e) {
 			Log.e("SIDTracker", "Failed loading backing track", e);
 			throw new RuntimeException(e);
 		}
-		createFollowMode();
 		new Thread(new AudioPlayerThread(queue, sid.getSampleRate())).start();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		queue.resume();
+		startThreads();
 	}
 	
 	@Override

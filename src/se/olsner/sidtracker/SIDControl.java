@@ -30,7 +30,7 @@ public class SIDControl {
 
 	public void setFrequencyHz(int voice, int hz) {
 		int base = voice*PER_VOICE_REGS;
-		int cycles = sid.getFrequencyValueFromHz(hz);
+		int cycles = SID.getFrequencyValueFromHz(hz);
 		queue.postControlMessage(sid.new SetRegistersMessage(new int[] { base + FREQ_LO, cycles & 0xff, base + FREQ_HI, cycles >> 8 }));
 	}
 	

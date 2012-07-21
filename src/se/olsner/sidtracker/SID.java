@@ -158,7 +158,19 @@ public class SID {
 		return cycleCounter;
 	}
 
-	int getFrequencyValueFromHz(int hz) {
+	public static int getFrequencyValueFromHz(int hz) {
 		return (int)((long)hz * (18<<24) / 17734475);
 	}
+
+	public static int channelForReg(int reg) {
+		if (reg < 21) {
+			return 1 + reg / 7;
+		} else if (reg >= 0x1b) {
+			return 3;
+		} else {
+			// Global register
+			return 0;
+		}
+	}
+
 }
