@@ -91,6 +91,7 @@
            delete both release and debug builds at once. (There are no separate
            ant targets for release/debug clean anyway.) -->
       <delete dir="obj"/>
+      <delete dir="libs/mips"/>
       <delete dir="libs/x86"/>
       <delete dir="libs/armeabi"/>
       <delete dir="libs/armeabi-v7a"/>
