@@ -17,6 +17,24 @@
 #define LOGV(fmt, ...) LOG_(VERBOSE, fmt, ## __VA_ARGS__)
 #define LOGD(fmt, ...) LOG_(DEBUG, fmt, ## __VA_ARGS__)
 
+/* Saves a few bytes by not pulling in new/delete. */
+inline void* operator new(size_t size) throw()
+{
+	return malloc(size);
+}
+inline void* operator new[](size_t size) throw()
+{
+	return malloc(size);
+}
+inline void operator delete(void* p) throw()
+{
+	return free(p);
+}
+inline void operator delete[](void* p) throw()
+{
+	return free(p);
+}
+
 // TODO Enable FP on Atom. cpuid asm bails out due to clobbering PIC register
 // Note: Using the floating-point code on ARMv6 even if it has VFP is not
 // useful, it'll be too slow (is on ZTE Blade anyway).
