@@ -41,7 +41,7 @@ struct JNINativeClass
 	JNINativeMethod* stop;
 };
 
-#define SECTION(s) __attribute__((section(s)))
+#define SECTION(s) __attribute__((section(s),externally_visible))
 #define REG_JNI_(klass, jname, cname, sig) \
 	JNINativeMethod jnireg__##klass##__##cname SECTION("JNI_" #klass) = { #jname, sig, (void*)Java_##klass##_##cname}
 #define REG_JNI(klass, name, sig) REG_JNI_(klass, name, name, sig)
@@ -160,7 +160,7 @@ int jniRegisterNativeMethods(JNIEnv* env, const char* className,
 	return 0;
 }
 
-#define EXPORT __attribute__((visibility("default")))
+#define EXPORT __attribute__((visibility("default"),externally_visible))
 
 EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
 {

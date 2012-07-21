@@ -7,6 +7,11 @@ LOCAL_MODULE    := sidtracker
 ### Add all source file names to be included in lib separated by a whitespace
 LOCAL_SRC_FILES := sidtracker.cpp
 LOCAL_CFLAGS := -fvisibility=hidden -fvisibility-inlines-hidden -Wall
+# The unwind tables take about 8kB on ARM, 4kB on x86. That's almost 50% of
+# the armv7 library.
+LOCAL_CFLAGS += -fno-unwind-tables
+# whole program: saves 3k on armv7, 15k on x86/armeabi
+LOCAL_CFLAGS += -fwhole-program
 # Test code to evaluate use of VFP on ARMv6
 #ifeq ($(TARGET_ARCH_ABI),armeabi)
 #LOCAL_CFLAGS += -march=armv6 -mfloat-abi=softfp -mfpu=vfp
