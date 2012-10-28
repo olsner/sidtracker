@@ -24,6 +24,7 @@ LOCAL_CFLAGS += -ffast-math -fassociative-math -fno-signed-zeros -fno-trapping-m
 LOCAL_LDLIBS := -llog
 LOCAL_LDLIBS += -Wl,--version-script,$(MY_JNI_DIR)/version-script.txt
 # LOCAL_LDLIBS += -Wl,-Map,linker.map
+LOCAL_LDFLAGS += -Wl,-z,max-page-size=0x1000
 LOCAL_ARM_MODE := arm
 PYTHON ?= python
 
