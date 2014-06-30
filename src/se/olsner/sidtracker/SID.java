@@ -84,6 +84,16 @@ public class SID {
 		write(reg, read(reg) ^ value);
 	}
 
+	public void and(int reg, int value)
+	{
+		write(reg, read(reg) & value);
+	}
+
+	public void or(int reg, int value)
+	{
+		write(reg, read(reg) | value);
+	}
+
 	/**
 	 * Clocks the SID, writing output samples into the given output array
 	 * (mono).
@@ -158,8 +168,16 @@ public class SID {
 		return cycleCounter;
 	}
 
+	public void copyRegs(byte[] regs) {
+		System.arraycopy(registerValues, 0, regs, 0, regs.length);
+	}
+
 	public static int getFrequencyValueFromHz(int hz) {
 		return (int)((long)hz * (18<<24) / 17734475);
+	}
+
+	public static int getHzFromFrequencyValue(int x) {
+		return (int)(((long)x * 17734475 / 18) >> 24);
 	}
 
 	public static int channelForReg(int reg) {
@@ -173,4 +191,9 @@ public class SID {
 		}
 	}
 
+	public static int getChannelFrequencyHz(byte[] regs, int channel) {
+		int base = channel * 7;
+		int val = (regs[base] & 0xff) | ((regs[base + 1] & 0xff) << 8);
+		return getHzFromFrequencyValue(val);
+	}
 }

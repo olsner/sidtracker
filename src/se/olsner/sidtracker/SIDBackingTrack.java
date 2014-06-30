@@ -134,6 +134,14 @@ public class SIDBackingTrack implements Runnable {
 		return sid.getCycleCount();
 	}
 
+	public long getClock() {
+		return msFromCycles(getCycleCount());
+	}
+
+	private long msFromCycles(long c) {
+		return (int)((1000 * c) / sid.getCyclesPerSecond());
+	}
+
 	public int getUserChannel() {
 		return user;
 	}

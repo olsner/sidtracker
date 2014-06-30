@@ -70,5 +70,11 @@ public class BufferedTrack implements Track {
         assert i < pos;
         return regXors[2 * i + 1] & 0xff;
     }
+
+    public int getFutureItems(long end) {
+        int count = 0;
+        while (count < pos && times[count] < end) count++;
+        return count;
+    }
 }
 
