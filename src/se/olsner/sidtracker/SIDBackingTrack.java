@@ -26,7 +26,7 @@ public class SIDBackingTrack implements Runnable {
 	private SID sid;
 	final int user = 1; // bitmask of ignored/user-controlled voices?
 	final int userGateReg = (user - 1) * 7 + 4;
-	final Track track;
+	final BufferedTrack track;
 
 	Listener listener;
 
@@ -39,7 +39,7 @@ public class SIDBackingTrack implements Runnable {
 	// Gate as set by user by touching
 	volatile boolean userGate;
 
-	public SIDBackingTrack(SID sid, SoundQueue queue, Track track)
+	public SIDBackingTrack(SID sid, SoundQueue queue, BufferedTrack track)
 	{
 		this.queue = queue;
 		this.sid = sid;

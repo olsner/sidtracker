@@ -61,10 +61,12 @@ public class SIDTracker extends Activity {
 		return new LZMA2InputStream(getAssets().open(path), 1 << 20);
 	}
 
+	private static final int LOOKAHEAD = 1000;
+
 	BufferedTrack openTrack(String name) throws IOException {
 		return new BufferedTrack(
 			new InputStreamTrack(openAsset(name+".lzma2")),
-			16);
+			LOOKAHEAD);
 	}
 
 	//@AfterViews
