@@ -77,7 +77,7 @@ public class SIDBackingTrack implements Runnable {
 	}
 
 	private void next() {
-		long now = sid.getCycleCount();
+		final long now = sid.getCycleCount();
 
 		// now doesn't change, and we will eventually read a non-zero delta
 		while (track.nextTime() <= now)
@@ -140,6 +140,42 @@ public class SIDBackingTrack implements Runnable {
 
 	private long msFromCycles(long c) {
 		return (int)((1000 * c) / sid.getCyclesPerSecond());
+	}
+
+	public int[] getFutureItems(final int ms) {
+		byte[] regs = new byte[32];
+		sid.copyRegs(regs);
+		if (correctGate) {
+			regs[userGateReg] |= 1;
+		} else {
+			regs[userGateReg] &= 0xfe;
+		}
+
+		final long ncycles = (long)ms * sid.getCyclesPerSecond() / 1000;
+		final long start = getCycleCount();
+		final long end = start + ncycles;
+		final int n = track.getFutureItems(end);
+//		Log.d("SIDTracker", "cycles "+start+".."+end);
+//		Log.d("SIDTracker", ms+"ms => "+cycles+" cycles "+n+" items");
+		int[] res = new int[2 * n]; // A bit excessive, probably.
+		int pos = 0;
+		res[pos++] = regs[userGateReg] & 1;
+		res[pos++] = SID.getChannelFrequencyHz(regs, user);
+		for (int i = 0; i < n; i++) {
+			long abst = track.time(i);
+			int reg = track.reg(i);
+			regs[reg] ^= track.xor(i);
+			if (reg == userGateReg) {
+				//long c = abst - cycles;
+				int tms = (int)msFromCycles(abst - start);
+				res[pos++] = (tms << 1) | (regs[userGateReg] & 1);
+				res[pos++] = SID.getChannelFrequencyHz(regs, user);
+				//Log.d("SIDTracker", "@"+tms+": "+res[pos - 1]+"Hz gate="+(regs[userGateReg] & 1));
+			}
+		}
+		int[] res2 = new int[pos];
+		System.arraycopy(res, 0, res2, 0, pos);
+		return res2;
 	}
 
 	public int getUserChannel() {
